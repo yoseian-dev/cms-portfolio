@@ -9,27 +9,37 @@ const items: NavigationMenuItem[] = [
   },
   {
     label: 'Posts',
-    icon: 'i-lucide-file-text',
+    icon: 'i-heroicons-document-text',
     to: '/admin/posts',
   },
   {
     label: 'Categories',
-    icon: 'i-lucide-folder',
+    icon: 'i-heroicons-folder',
     to: '/admin/categories',
   },
 ]
+
+const open = defineModel<boolean>('open', { default: true })
+
 </script>
 
 <template>
-  <aside class="w-64 shrink-0 border-r border-default bg-muted/30 p-4">
-    <div class="mb-6 text-lg font-bold">
-      CMS Admin
-    </div>
+  <USidebar collapsible="icon" v-model:open="open" :ui="{
+    container: 'h-full',
+    inner: 'bg-elevated/25 divide-transparent',
+    body: 'py-0'
+  }">
+    <template #header="{ state }">
+      <div v-if="state === 'expanded'" class="text-lg font-bold whitespace-nowrap">
+        CMS Admin
+      </div>
+      <div v-else class="flex justify-center">
+        <UIcon name="i-lucide-layout-dashboard" class="size-6" />
+      </div>
+    </template>
 
-    <UNavigationMenu
-      :items="items"
-      orientation="vertical"
-      :ui="{ link: 'p-2' }"
-    />
-  </aside>
+    <template #default="{ state }">
+      <UNavigationMenu :items="items" orientation="vertical" :ui="{ link: 'p-3 overflow-hidden' }" />
+    </template>
+  </USidebar>
 </template>

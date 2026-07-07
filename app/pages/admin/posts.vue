@@ -5,5 +5,8 @@ definePageMeta({
 </script>
 
 <template>
-    posts...
+
+  <div class="">
+    container
+  </div>
 </template>
