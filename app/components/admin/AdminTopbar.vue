@@ -1,3 +1,13 @@
+<script setup lang="ts">
+const emit = defineEmits<{
+  'toggle-sidebar': []
+}>()
+
+const sidebarToggle = () => {
+  emit('toggle-sidebar')
+}
+</script>
+
 <template>
   <header class="h-14 border-b border-default px-6 flex items-center justify-between">
     <UButton color="neutral" variant="ghost" icon="i-lucide-menu" aria-label="Menu" @click="sidebarToggle" />
@@ -9,13 +19,3 @@
     </div>
   </header>
 </template>
-
-<script setup lang="ts">
-const emit = defineEmits<{
-  'toggle-sidebar': []
-}>()
-
-const sidebarToggle = () => {
-  emit('toggle-sidebar')
-}
-</script>

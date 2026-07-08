@@ -3,17 +3,17 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const items: NavigationMenuItem[] = [
   {
-    label: 'Dashboard',
+    label: 'ダッシュボード',
     icon: 'i-heroicons-home',
     to: '/admin',
   },
   {
-    label: 'Posts',
+    label: '記事管理',
     icon: 'i-heroicons-document-text',
     to: '/admin/posts',
   },
   {
-    label: 'Categories',
+    label: 'カテゴリ管理',
     icon: 'i-heroicons-folder',
     to: '/admin/categories',
   },
