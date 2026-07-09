@@ -1,9 +1,10 @@
 <script setup lang="ts">
+
 definePageMeta({
   layout: 'admin'
 })
 
-const posts = [
+const posts = ref([
   {
     id: 1,
     title: 'Nuxt 4 と Prisma で CMS を作る',
@@ -46,7 +47,37 @@ const posts = [
     status: '下書き',
     createdAt: '2026-07-03',
   },
+])
+const columns = [
+  {
+    accessorKey: 'title',
+    header: 'タイトル'
+  },
+  {
+    accessorKey: 'category',
+    header: 'カテゴリ'
+  },
+  {
+    accessorKey: 'status',
+    header: 'ステータス'
+  },
+  {
+    accessorKey: 'createdAt',
+    header: '作成日'
+  },
+  {
+    id: 'actions',
+    header: '操作'
+  }
 ]
+
+const editPost = (post: Object) => {
+  console.log('edit post:', post)
+}
+
+const deletePost = (post: Object) => {
+  console.log('delete post:', post)
+}
 </script>
 
 <template>
@@ -87,61 +118,29 @@ const posts = [
       body: 'h-full min-h-0 flex flex-col'
     }">
       <div class="flex justify-between min-h-0 items-center mb-4 shrink-0">
-        <UInput placeholder="検索..." icon="i-heroicons-magnifying-glass" />
+        <UInput placeholder="記事を検索..." icon="i-heroicons-magnifying-glass" />
         <div class="flex gap-3">
           <USelect placeholder="カテゴリで絞り込み" :items="['すべて', 'Nuxt', 'Database', 'Frontend']" />
-          <USelect placeholder="カテゴリで絞り込み" :items="['すべて', '公開中', '下書き']" />
+          <USelect placeholder="ステータスで絞り込み" :items="['すべて', '公開中', '下書き']" />
         </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto min-h-0">
-        <table class="w-full text-sm">
-          <thead class="border-b text-left text-gray-500">
-            <tr>
-              <th class="py-3 pr-4 font-medium">
-                タイトル
-              </th>
-              <th class="py-3 pr-4 font-medium">
-                カテゴリ
-              </th>
-              <th class="py-3 pr-4 font-medium">
-                ステータス
-              </th>
-              <th class="py-3 pr-4 font-medium">
-                作成日
-              </th>
-              <th class="py-3 text-right font-medium">
-                操作
-              </th>
-            </tr>
-          </thead>
+      <UTable ref="table" :data="posts" :columns="columns" :sticky="true" class="h-full">
+        <template #status-cell="{ row }">
+          <UBadge :color="row.original.status === '公開中' ? 'success' : 'neutral'" variant="soft">
+            {{ row.original.status }}
+          </UBadge>
+        </template>
+        <template #actions-cell="{ row }">
+          <div class="flex items-center gap-2">
+            <UButton size="xs" variant="ghost" color="success" icon="i-heroicons-pencil-square"
+              @click="editPost(row.original)" />
 
-          <tbody>
-            <tr v-for="post in posts" :key="post.id" class="border-b last:border-b-0">
-              <td class="py-4 pr-4 font-medium">
-                {{ post.title }}
-              </td>
-              <td class="py-4 pr-4">
-                {{ post.category }}
-              </td>
-              <td class="py-4 pr-4">
-                <UBadge :color="post.status === '公開中' ? 'primary' : 'neutral'" variant="soft">
-                  {{ post.status }}
-                </UBadge>
-              </td>
-              <td class="py-4 pr-4 text-gray-500">
-                {{ post.createdAt }}
-              </td>
-              <td class="py-4 text-right">
-                <div class="flex justify-end gap-2">
-                  <UButton icon="i-lucide-pencil" variant="ghost" size="sm" />
-                  <UButton icon="i-lucide-trash-2" color="error" variant="ghost" size="sm" />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
+              @click="deletePost(row.original)" />
+          </div>
+        </template>
+      </UTable>
     </UCard>
   </div>
 </template>
