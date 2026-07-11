@@ -3,10 +3,14 @@ definePageMeta({
   layout: 'admin'
 })
 
-const stats = [
+const { data, status, error } = await useFetch('/api/admin/dashboard', {
+  server: true
+})
+
+const stats = computed(() => [
   {
     label: '全記事',
-    value: 32,
+    value: data.value?.stats.totalPosts || 0,
     description: 'すべての記事',
     icon: 'i-lucide-notebook-tabs',
     iconClass: 'text-emerald-600 dark:text-emerald-400',
@@ -14,7 +18,7 @@ const stats = [
   },
   {
     label: '公開中',
-    value: 24,
+    value: data.value?.stats.publishedPosts || 0,
     description: '公開されている記事',
     icon: 'i-lucide-send',
     iconClass: 'text-blue-600 dark:text-blue-400',
@@ -22,7 +26,7 @@ const stats = [
   },
   {
     label: '下書き',
-    value: 8,
+    value: data.value?.stats.draftPosts || 0,
     description: '下書きの記事',
     icon: 'i-lucide-pencil-line',
     iconClass: 'text-amber-600 dark:text-amber-400',
@@ -30,43 +34,17 @@ const stats = [
   },
   {
     label: '全カテゴリ',
-    value: 4,
+    value: data.value?.stats.totalCategories || 0,
     description: '登録済みのカテゴリ',
     icon: 'i-lucide-folder',
     iconClass: 'text-violet-600 dark:text-violet-400',
     iconBgClass: 'bg-violet-50 dark:bg-violet-950/50'
   }
-]
-const posts = ref([
-  {
-    id: 1,
-    title: 'Nuxt 4とPrismaでCMSを構築する',
-    category: 'Nuxt',
-    status: '公開中',
-    createdAt: '2026-07-10'
-  },
-  {
-    id: 2,
-    title: 'Neon PostgreSQLとの接続方法',
-    category: 'Database',
-    status: '公開中',
-    createdAt: '2026-07-09'
-  },
-  {
-    id: 3,
-    title: 'Nuxt UIで管理画面を実装する',
-    category: 'Frontend',
-    status: '公開中',
-    createdAt: '2026-07-08'
-  },
-  {
-    id: 4,
-    title: 'Prisma 7の基本的な使い方',
-    category: 'Database',
-    status: '公開中',
-    createdAt: '2026-07-07'
-  },
-])
+]);
+
+
+const recentPosts = computed(() => data.value?.recentPosts ?? [])
+
 const columns = [
   {
     accessorKey: 'title',
@@ -82,9 +60,13 @@ const columns = [
   },
   {
     accessorKey: 'createdAt',
-    header: '作成日'
+    header: '更新日'
   }
 ]
+
+const formatDate = (date: string) => {
+  return new Intl.DateTimeFormat('ja-JP').format(new Date(date))
+}
 </script>
 
 <template>
@@ -116,11 +98,17 @@ const columns = [
       <UCard class="flex flex-col h-full xl:col-span-7" :ui="{ body: 'flex-1', footer: 'p-2' }">
         <div class="">
           <h2 class="text-lg font-bold mb-2">最近の記事</h2>
-          <UTable ref="table" :data="posts" :columns="columns" :sticky="true" class="h-full">
+          <UTable ref="table" :data="recentPosts" :columns="columns" :sticky="true" class="h-full">
             <template #status-cell="{ row }">
-              <UBadge :color="row.original.status === '公開中' ? 'success' : 'neutral'" variant="soft">
-                {{ row.original.status }}
+              <UBadge :color="row.original.status === 'PUBLISHED' ? 'success' : 'neutral'" variant="soft">
+                {{ row.original.status === 'PUBLISHED' ? '公開中' : '下書き' }}
               </UBadge>
+            </template>
+            <template #category-cell="{ row }">
+              {{ row.original.category?.name }}
+            </template>
+            <template #createdAt-cell="{ row }">
+              {{ formatDate(row.original.createdAt) }}
             </template>
           </UTable>
         </div>
@@ -133,9 +121,9 @@ const columns = [
       </UCard>
       <!-- カテゴリテーブル -->
       <UCard class="flex flex-col h-full xl:col-span-5" :ui="{ body: 'flex-1', footer: 'p-2' }">
-        <div class="">
+        <div class="h-full">
           <h2 class="text-lg font-bold mb-2">カテゴリ別の記事数</h2>
-          <div class="flex-1">グラフは今後追加予定です。</div>
+          <div class="flex-1 text-muted mt-2 text-sm h-full flex justify-center items-center">グラフは今後追加予定です。</div>
         </div>
         <template #footer>
           <div class="flex justify-center">
