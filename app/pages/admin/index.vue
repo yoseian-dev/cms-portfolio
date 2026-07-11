@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import DashboardSkeleton from '~/components/admin/DashboardSkeleton.vue';
+
 definePageMeta({
   layout: 'admin'
 })
 
-const { data, status, error } = await useFetch('/api/admin/dashboard', {
-  server: true
-})
+const { data, status, error } = await useLazyFetch('/api/admin/dashboard', { server: false })
 
 const stats = computed(() => [
   {
@@ -70,7 +70,8 @@ const formatDate = (date: string) => {
 </script>
 
 <template>
-  <div class="p-6 flex flex-col min-h-0 gap-6 h-full overflow-y-auto">
+  <DashboardSkeleton v-if="status === 'idle' || status === 'pending'" class="p-6" />
+  <div v-else class="p-6 flex flex-col min-h-0 gap-6 h-full overflow-y-auto">
     <!-- title -->
     <div class="min-h-0 shrink-0">
       <h1 class="text-2xl font-bold">ダッシュボート</h1>

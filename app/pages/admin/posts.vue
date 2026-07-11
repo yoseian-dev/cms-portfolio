@@ -1,95 +1,74 @@
 <script setup lang="ts">
+import DashboardSkeleton from '~/components/admin/DashboardSkeleton.vue';
 
 definePageMeta({
   layout: 'admin'
 })
 
-const posts = ref([
-  {
-    id: 1,
-    title: 'Nuxt 4とPrismaでCMSを構築する',
-    category: 'Nuxt',
-    status: '公開中',
-    createdAt: '2026-07-10'
-  },
-  {
-    id: 2,
-    title: 'Neon PostgreSQLとの接続方法',
-    category: 'Database',
-    status: '公開中',
-    createdAt: '2026-07-09'
-  },
-  {
-    id: 3,
-    title: 'Nuxt UIで管理画面を実装する',
-    category: 'Frontend',
-    status: '公開中',
-    createdAt: '2026-07-08'
-  },
-  {
-    id: 4,
-    title: 'Prisma 7の基本的な使い方',
-    category: 'Database',
-    status: '公開中',
-    createdAt: '2026-07-07'
-  },
-  {
-    id: 5,
-    title: 'レスポンシブなダッシュボードの作り方',
-    category: 'Frontend',
-    status: '下書き',
-    createdAt: '2026-07-06'
-  },
-  {
-    id: 6,
-    title: 'Nuxt Server APIでCRUDを実装する',
-    category: 'Backend',
-    status: '公開中',
-    createdAt: '2026-07-05'
-  },
-  {
-    id: 7,
-    title: 'VercelへNuxtアプリをデプロイする',
-    category: 'DevOps',
-    status: '公開中',
-    createdAt: '2026-07-04'
-  },
-  {
-    id: 8,
-    title: '管理画面のレイアウト設計',
-    category: 'Frontend',
-    status: '下書き',
-    createdAt: '2026-07-03'
-  },
-  {
-    id: 9,
-    title: 'カテゴリ管理機能の設計と実装',
-    category: 'Backend',
-    status: '下書き',
-    createdAt: '2026-07-02'
-  },
-  {
-    id: 10,
-    title: 'Tailwind CSSで統一感のあるUIを作る',
-    category: 'Frontend',
-    status: '公開中',
-    createdAt: '2026-07-01'
-  },
-  {
-    id: 11,
-    title: 'Prisma Seedで初期データを登録する',
-    category: 'Database',
-    status: '公開中',
-    createdAt: '2026-06-30'
-  },
-  {
-    id: 12,
-    title: 'Nuxtプロジェクトのディレクトリ構成',
-    category: 'Nuxt',
-    status: '下書き',
-    createdAt: '2026-06-29'
+type PostStatus = 'DRAFT' | 'PUBLISHED'
+
+type PostResponse = {
+  id: string
+  title: string
+  slug: string
+  status: PostStatus
+  createdAt: string
+  category: {
+    id: string
+    name: string
+  } | null
+}
+
+type PostsPageResponse = {
+  stats: {
+    total: number
+    published: number
+    draft: number
+    uncategorized: number
   }
-])
+  posts: PostResponse[]
+}
+
+const {
+  data,
+  status,
+  error,
+  refresh
+} = await useLazyFetch<PostsPageResponse>('/api/admin/posts', {
+  server: false,
+  default: () => ({
+    stats: {
+      total: 0,
+      published: 0,
+      draft: 0,
+      uncategorized: 0
+    },
+    posts: []
+  })
+})
+
+const posts = computed(() =>
+  data.value.posts.map(post => ({
+    id: post.id,
+    title: post.title,
+    category: post.category?.name ?? '未分類',
+    status: post.status === 'PUBLISHED' ? '公開中' : '下書き',
+    createdAt: formatDate(post.createdAt)
+  }))
+)
+
+const stats = computed(() => data.value.stats)
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+    .format(new Date(value))
+    .replaceAll('/', '-')
+}
+
 const columns = [
   {
     accessorKey: 'title',
@@ -123,7 +102,8 @@ const deletePost = (post: Object) => {
 </script>
 
 <template>
-  <div class="p-6 flex flex-col gap-6 min-h-0 h-full">
+  <DashboardSkeleton v-if="status === 'idle' || status === 'pending'" class="p-6" />
+  <div v-else class="p-6 flex flex-col gap-6 min-h-0 h-full">
     <!-- title -->
     <div class="flex justify-between items-center shrink-0">
       <div>
@@ -140,15 +120,15 @@ const deletePost = (post: Object) => {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
       <UCard>
         <div class="mb-1">全記事</div>
-        <div class="text-2xl font-bold">32</div>
+        <div class="text-2xl font-bold">{{ stats.total }}</div>
       </UCard>
       <UCard>
         <div class="mb-1">公開中</div>
-        <div class="text-2xl font-bold">24</div>
+        <div class="text-2xl font-bold">{{ stats.published }}</div>
       </UCard>
       <UCard>
         <div class="mb-1">下書き</div>
-        <div class="text-2xl font-bold">8</div>
+        <div class="text-2xl font-bold">{{ stats.draft }}</div>
       </UCard>
     </div>
     <!-- table card -->
