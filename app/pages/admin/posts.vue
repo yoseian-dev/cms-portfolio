@@ -7,46 +7,88 @@ definePageMeta({
 const posts = ref([
   {
     id: 1,
-    title: 'Nuxt 4 と Prisma で CMS を作る',
+    title: 'Nuxt 4とPrismaでCMSを構築する',
     category: 'Nuxt',
     status: '公開中',
-    createdAt: '2026-07-01',
+    createdAt: '2026-07-10'
   },
   {
     id: 2,
-    title: 'Vercel と Neon PostgreSQL の接続',
+    title: 'Neon PostgreSQLとの接続方法',
     category: 'Database',
     status: '公開中',
-    createdAt: '2026-07-02',
+    createdAt: '2026-07-09'
   },
   {
     id: 3,
-    title: '管理画面レイアウトの実装',
+    title: 'Nuxt UIで管理画面を実装する',
     category: 'Frontend',
-    status: '下書き',
-    createdAt: '2026-07-03',
+    status: '公開中',
+    createdAt: '2026-07-08'
   },
   {
     id: 4,
-    title: '管理画面レイアウトの実装',
-    category: 'Frontend',
-    status: '下書き',
-    createdAt: '2026-07-03',
+    title: 'Prisma 7の基本的な使い方',
+    category: 'Database',
+    status: '公開中',
+    createdAt: '2026-07-07'
   },
   {
     id: 5,
-    title: '管理画面レイアウトの実装',
+    title: 'レスポンシブなダッシュボードの作り方',
     category: 'Frontend',
     status: '下書き',
-    createdAt: '2026-07-03',
+    createdAt: '2026-07-06'
   },
   {
     id: 6,
-    title: '管理画面レイアウトの実装',
+    title: 'Nuxt Server APIでCRUDを実装する',
+    category: 'Backend',
+    status: '公開中',
+    createdAt: '2026-07-05'
+  },
+  {
+    id: 7,
+    title: 'VercelへNuxtアプリをデプロイする',
+    category: 'DevOps',
+    status: '公開中',
+    createdAt: '2026-07-04'
+  },
+  {
+    id: 8,
+    title: '管理画面のレイアウト設計',
     category: 'Frontend',
     status: '下書き',
-    createdAt: '2026-07-03',
+    createdAt: '2026-07-03'
   },
+  {
+    id: 9,
+    title: 'カテゴリ管理機能の設計と実装',
+    category: 'Backend',
+    status: '下書き',
+    createdAt: '2026-07-02'
+  },
+  {
+    id: 10,
+    title: 'Tailwind CSSで統一感のあるUIを作る',
+    category: 'Frontend',
+    status: '公開中',
+    createdAt: '2026-07-01'
+  },
+  {
+    id: 11,
+    title: 'Prisma Seedで初期データを登録する',
+    category: 'Database',
+    status: '公開中',
+    createdAt: '2026-06-30'
+  },
+  {
+    id: 12,
+    title: 'Nuxtプロジェクトのディレクトリ構成',
+    category: 'Nuxt',
+    status: '下書き',
+    createdAt: '2026-06-29'
+  }
 ])
 const columns = [
   {
@@ -81,7 +123,7 @@ const deletePost = (post: Object) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 min-h-0 h-full">
+  <div class="p-6 flex flex-col gap-6 min-h-0 h-full">
     <!-- title -->
     <div class="flex justify-between items-center shrink-0">
       <div>
@@ -95,7 +137,7 @@ const deletePost = (post: Object) => {
       <UButton icon="i-heroicons-plus">新規作成 </UButton>
     </div>
     <!-- grid -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 shrink-0">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
       <UCard>
         <div class="mb-1">全記事</div>
         <div class="text-2xl font-bold">32</div>
@@ -107,10 +149,6 @@ const deletePost = (post: Object) => {
       <UCard>
         <div class="mb-1">下書き</div>
         <div class="text-2xl font-bold">8</div>
-      </UCard>
-      <UCard>
-        <div class="mb-1">カテゴリ数</div>
-        <div class="text-2xl font-bold">0</div>
       </UCard>
     </div>
     <!-- table card -->

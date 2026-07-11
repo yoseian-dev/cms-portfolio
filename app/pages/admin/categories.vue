@@ -74,7 +74,7 @@ const deletePost = (post: Object) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 h-full">
+  <div class="p-6 flex flex-col gap-6 h-full">
     <!-- title -->
     <div class="flex justify-between items-center min-h-0 shrink-0">
       <div class="">

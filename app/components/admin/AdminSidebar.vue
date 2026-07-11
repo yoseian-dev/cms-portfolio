@@ -31,7 +31,7 @@ const open = defineModel<boolean>('open', { default: true })
   }">
     <template #header="{ state }">
       <div v-if="state === 'expanded'" class="text-lg font-bold whitespace-nowrap">
-        CMS Admin
+        Yoseian CMS
       </div>
       <div v-else class="flex justify-center">
         <UIcon name="i-lucide-layout-dashboard" class="size-6" />
