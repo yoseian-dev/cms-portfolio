@@ -25,44 +25,12 @@ const columns = [
     header: '操作'
   }
 ]
-type Category = {
-  id: number
-  name: string
-  description: string
-  postCount: number
-  createdAt: string
-}
 
-const categories: Category[] = [
-  {
-    id: 1,
-    name: 'Nuxt',
-    description: 'Nuxt に関する記事',
-    postCount: 12,
-    createdAt: '2026-07-01'
-  },
-  {
-    id: 2,
-    name: 'Database',
-    description: 'Prisma や PostgreSQL に関する記事',
-    postCount: 8,
-    createdAt: '2026-07-02'
-  },
-  {
-    id: 3,
-    name: 'Frontend',
-    description: 'フロントエンド開発に関する記事',
-    postCount: 12,
-    createdAt: '2026-07-03'
-  },
-  {
-    id: 4,
-    name: 'Backend',
-    description: 'バックエンド開発に関する記事',
-    postCount: 0,
-    createdAt: '2026-07-03'
-  }
-]
+const { data, status, error } = useLazyFetch('/api/admin/categories', {
+  server: false
+})
+
+const categories = computed(() => data.value?.categories)
 
 const editPost = (post: Object) => {
   console.log('edit post:', post)
@@ -107,9 +75,9 @@ const deletePost = (post: Object) => {
       </div>
       <UTable ref="table" :data="categories" :columns="columns" :sticky="true" class="h-full">
         <template #postCount-cell="{ row }">
-          <UBadge :color="row.original.postCount > 0 ? 'success' : 'neutral'" variant="soft">
+          <!-- <UBadge :color="row.original.postCount > 0 ? 'success' : 'neutral'" variant="soft">
             {{ row.original.postCount }}
-          </UBadge>
+          </UBadge>-->
         </template>
         <template #actions-cell="{ row }">
           <div class="flex items-center gap-2">

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DashboardSkeleton from '~/components/admin/DashboardSkeleton.vue';
 
 definePageMeta({
   layout: 'admin'
@@ -14,11 +13,14 @@ type PostResponse = {
   status: PostStatus
   createdAt: string
   category: {
-    id: string
+    slug: string
     name: string
   } | null
 }
-
+type CategoryResponse = {
+  id: string
+  name: string
+}
 type PostsPageResponse = {
   stats: {
     total: number
@@ -26,16 +28,43 @@ type PostsPageResponse = {
     draft: number
     uncategorized: number
   }
-  posts: PostResponse[]
+  posts: PostResponse[],
+  categories: CategoryResponse[]
 }
+const keyword = ref('')
+const debouncedKeyword = ref('')
+const categoryId = ref('all')
+const postStatus = ref<PostStatus | 'all'>('all')
 
-const {
-  data,
-  status,
-  error,
-  refresh
-} = await useLazyFetch<PostsPageResponse>('/api/admin/posts', {
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(keyword, (value) => {
+  clearTimeout(searchTimer)
+
+  searchTimer = setTimeout(() => {
+    debouncedKeyword.value = value.trim()
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
+})
+
+const requestQuery = computed(() => ({
+  keyword: debouncedKeyword.value || undefined,
+  categoryId:
+    categoryId.value === 'all'
+      ? undefined
+      : categoryId.value,
+  status:
+    postStatus.value === 'all'
+      ? undefined
+      : postStatus.value
+}))
+
+const { data, status, error, refresh } = await useLazyFetch<PostsPageResponse>('/api/admin/posts', {
   server: false,
+  query: requestQuery,
   default: () => ({
     stats: {
       total: 0,
@@ -43,10 +72,41 @@ const {
       draft: 0,
       uncategorized: 0
     },
-    posts: []
+    posts: [],
+    categories: []
   })
 })
 
+
+const categoryItems = computed(() => [
+  {
+    label: 'すべて',
+    value: 'all'
+  },
+  ...data.value?.categories.map(category => ({
+    label: category.name,
+    value: category.id
+  })),
+  {
+    label: '未分類',
+    value: 'uncategorized'
+  }
+])
+
+const statusItems = [
+  {
+    label: 'すべて',
+    value: 'all'
+  },
+  {
+    label: '公開中',
+    value: 'PUBLISHED'
+  },
+  {
+    label: '下書き',
+    value: 'DRAFT'
+  }
+]
 const posts = computed(() =>
   data.value.posts.map(post => ({
     id: post.id,
@@ -102,8 +162,7 @@ const deletePost = (post: Object) => {
 </script>
 
 <template>
-  <DashboardSkeleton v-if="status === 'idle' || status === 'pending'" class="p-6" />
-  <div v-else class="p-6 flex flex-col gap-6 min-h-0 h-full">
+  <div class="p-6 flex flex-col gap-6 min-h-0 h-full">
     <!-- title -->
     <div class="flex justify-between items-center shrink-0">
       <div>
@@ -136,29 +195,46 @@ const deletePost = (post: Object) => {
       body: 'h-full min-h-0 flex flex-col'
     }">
       <div class="flex justify-between min-h-0 items-center mb-4 shrink-0">
-        <UInput placeholder="記事を検索..." icon="i-heroicons-magnifying-glass" />
+        <UInput v-model="keyword" placeholder="記事を検索..." leading-icon="i-heroicons-magnifying-glass">
+          <template #trailing>
+            <UButton v-if="keyword" color="neutral" variant="link" size="xs" icon="i-heroicons-x-mark"
+              aria-label="検索キーワードをクリア" @click="() => { keyword = '' }" />
+          </template>
+        </UInput>
         <div class="flex gap-3">
-          <USelect placeholder="カテゴリで絞り込み" :items="['すべて', 'Nuxt', 'Database', 'Frontend']" />
-          <USelect placeholder="ステータスで絞り込み" :items="['すべて', '公開中', '下書き']" />
+          <USelect v-model="categoryId" :items="categoryItems" class="min-w-40" />
+          <USelect v-model="postStatus" :items="statusItems" class="min-w-40" />
         </div>
       </div>
+      <div class="relative h-full">
+        <!-- loading... -->
+        <div v-if="status === 'idle' || status === 'pending'" class="absolute inset-0 z-10 flex items-center justify-center
+           bg-white/60 backdrop-blur-[1px]">
+          <UIcon name="i-lucide-loader-circle" class="animate-spin size-8" />
+        </div>
+        <!-- table -->
+        <UTable ref="table" :data="posts" :columns="columns" :sticky="true" class="h-full">
+          <template #empty>
+            <div class="py-12 text-center text-gray-500">
+              条件に一致する記事がありません。
+            </div>
+          </template>
+          <template #status-cell="{ row }">
+            <UBadge :color="row.original.status === '公開中' ? 'success' : 'neutral'" variant="soft">
+              {{ row.original.status }}
+            </UBadge>
+          </template>
+          <template #actions-cell="{ row }">
+            <div class="flex items-center gap-2">
+              <UButton size="xs" variant="ghost" color="success" icon="i-heroicons-pencil-square"
+                @click="editPost(row.original)" />
 
-      <UTable ref="table" :data="posts" :columns="columns" :sticky="true" class="h-full">
-        <template #status-cell="{ row }">
-          <UBadge :color="row.original.status === '公開中' ? 'success' : 'neutral'" variant="soft">
-            {{ row.original.status }}
-          </UBadge>
-        </template>
-        <template #actions-cell="{ row }">
-          <div class="flex items-center gap-2">
-            <UButton size="xs" variant="ghost" color="success" icon="i-heroicons-pencil-square"
-              @click="editPost(row.original)" />
-
-            <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
-              @click="deletePost(row.original)" />
-          </div>
-        </template>
-      </UTable>
+              <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
+                @click="deletePost(row.original)" />
+            </div>
+          </template>
+        </UTable>
+      </div>
     </UCard>
   </div>
 </template>

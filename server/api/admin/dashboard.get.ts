@@ -1,7 +1,6 @@
 import { PostStatus } from '../../../app/generated/prisma/client'
 import { prisma } from '../../utils/prisma'
 export default defineEventHandler(async () => {
-    console.log('Fetching dashboard data...')
     try {
         const [
             totalPosts,

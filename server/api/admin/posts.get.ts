@@ -1,49 +1,103 @@
 // server/api/admin/posts/index.get.ts
-export default defineEventHandler(async () => {
-    // sleep 2s
-    // await new Promise((resolve, reject) => setTimeout(resolve, 2000))
+import { PostStatus } from '../../../app/generated/prisma/client'
 
-    const [posts, total, published, draft, uncategorized] =
-        await Promise.all([
-            prisma.post.findMany({
-                orderBy: {
-                    createdAt: 'desc'
-                },
-                select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                    status: true,
-                    createdAt: true,
-                    category: {
-                        select: {
-                            id: true,
-                            name: true
-                        }
+export default defineEventHandler(async (event) => {
+    const query = getQuery(event)
+
+    const keyword =
+        typeof query.keyword === 'string'
+            ? query.keyword.trim()
+            : ''
+
+    const categoryId =
+        typeof query.categoryId === 'string'
+            ? query.categoryId
+            : ''
+
+    const status: PostStatus | undefined =
+        query.status === 'PUBLISHED' || query.status === 'DRAFT'
+            ? query.status
+            : undefined
+
+    const where = {
+        ...(keyword
+            ? {
+                title: {
+                    contains: keyword,
+                    mode: 'insensitive' as const
+                }
+            }
+            : {}),
+        ...(categoryId
+            ? {
+                categoryId:
+                    categoryId === 'uncategorized'
+                        ? null
+                        : categoryId
+            }
+            : {}),
+        ...(status ? { status } : {})
+    }
+
+    const [
+        posts,
+        total,
+        published,
+        draft,
+        uncategorized,
+        categories
+    ] = await Promise.all([
+        prisma.post.findMany({
+            where,
+            orderBy: {
+                createdAt: 'desc'
+            },
+            select: {
+                id: true,
+                title: true,
+                slug: true,
+                status: true,
+                createdAt: true,
+                category: {
+                    select: {
+                        id: true,
+                        name: true
                     }
                 }
-            }),
+            }
+        }),
 
-            prisma.post.count(),
+        // 统计数据保持为全局数据，不受筛选条件影响
+        prisma.post.count(),
 
-            prisma.post.count({
-                where: {
-                    status: 'PUBLISHED'
-                }
-            }),
+        prisma.post.count({
+            where: {
+                status: 'PUBLISHED'
+            }
+        }),
 
-            prisma.post.count({
-                where: {
-                    status: 'DRAFT'
-                }
-            }),
+        prisma.post.count({
+            where: {
+                status: 'DRAFT'
+            }
+        }),
 
-            prisma.post.count({
-                where: {
-                    categoryId: null
-                }
-            })
-        ])
+        prisma.post.count({
+            where: {
+                categoryId: null
+            }
+        }),
+
+        prisma.category.findMany({
+            orderBy: {
+                name: 'asc'
+            },
+            select: {
+                id: true,
+                name: true
+            }
+        })
+    ])
 
     return {
         stats: {
@@ -52,6 +106,7 @@ export default defineEventHandler(async () => {
             draft,
             uncategorized
         },
-        posts
+        posts,
+        categories
     }
 })
