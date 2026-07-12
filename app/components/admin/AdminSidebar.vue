@@ -13,7 +13,7 @@ const items: NavigationMenuItem[] = [
     to: '/admin/posts',
   },
   {
-    label: 'カテゴリ管理',
+    label: 'カテゴリー管理',
     icon: 'i-heroicons-folder',
     to: '/admin/categories',
   },

@@ -4,26 +4,11 @@ definePageMeta({
 })
 
 const columns = [
-  {
-    accessorKey: 'name',
-    header: '名前'
-  },
-  {
-    accessorKey: 'description',
-    header: '説明'
-  },
-  {
-    accessorKey: 'postCount',
-    header: '記事数'
-  },
-  {
-    accessorKey: 'createdAt',
-    header: '作成日'
-  },
-  {
-    id: 'actions',
-    header: '操作'
-  }
+  { accessorKey: 'name', header: '名前' },
+  { accessorKey: 'description', header: '説明' },
+  { accessorKey: 'postCount', header: '記事数' },
+  { accessorKey: 'createdAt', header: '作成日' },
+  { id: 'actions', header: '操作' }
 ]
 
 const { data, status, error } = useLazyFetch('/api/admin/categories', {
@@ -46,15 +31,15 @@ const deletePost = (post: Object) => {
     <!-- title -->
     <div class="flex justify-between items-center min-h-0 shrink-0">
       <div class="">
-        <h1 class="text-2xl font-bold">カテゴリ管理</h1>
-        <p>カテゴリの作成、編集、削除を行います。</p>
+        <h1 class="text-2xl font-bold">カテゴリー管理</h1>
+        <p>カテゴリーの作成、編集、削除を行います。</p>
       </div>
       <UButton icon="i-heroicons-plus">新規作成</UButton>
     </div>
     <!-- grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-0 shrink-0">
       <UCard>
-        <div class="mb-1">全カテゴリ</div>
+        <div class="mb-1">全カテゴリー</div>
         <div class="text-2xl font-bold">12</div>
       </UCard>
       <UCard>
@@ -71,7 +56,7 @@ const deletePost = (post: Object) => {
       body: 'h-full min-h-0 flex flex-col'
     }">
       <div>
-        <UInput placeholder="カテゴリ名で検索..." icon="i-heroicons-magnifying-glass" />
+        <UInput placeholder="カテゴリー名で検索..." icon="i-heroicons-magnifying-glass" />
       </div>
       <UTable ref="table" :data="categories" :columns="columns" :sticky="true" class="h-full">
         <template #postCount-cell="{ row }">

@@ -23,7 +23,7 @@ const version = '0.1.0'
       </main>
 
       <!-- footer -->
-      <footer class="flex justify-between items-center shrink-0 py-4 px-6 border-t border-default bg-default text-sm text-muted">
+      <footer class="flex justify-between items-center shrink-0 py-4 px-6 border-t border-default bg-default text-sm text-muted relative">
         <p>
           © {{ currentYear }} Yoseian
         </p>

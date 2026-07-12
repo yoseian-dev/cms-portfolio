@@ -33,9 +33,9 @@ const stats = computed(() => [
     iconBgClass: 'bg-amber-50 dark:bg-amber-950/50'
   },
   {
-    label: '全カテゴリ',
+    label: '全カテゴリー',
     value: data.value?.stats.totalCategories || 0,
-    description: '登録済みのカテゴリ',
+    description: '登録済みのカテゴリー',
     icon: 'i-lucide-folder',
     iconClass: 'text-violet-600 dark:text-violet-400',
     iconBgClass: 'bg-violet-50 dark:bg-violet-950/50'
@@ -52,7 +52,7 @@ const columns = [
   },
   {
     accessorKey: 'category',
-    header: 'カテゴリ'
+    header: 'カテゴリー'
   },
   {
     accessorKey: 'status',
@@ -120,15 +120,15 @@ const formatDate = (date: string) => {
           </div>
         </template>
       </UCard>
-      <!-- カテゴリテーブル -->
+      <!-- カテゴリーテーブル -->
       <UCard class="flex flex-col h-full xl:col-span-5" :ui="{ body: 'flex-1', footer: 'p-2' }">
         <div class="h-full">
-          <h2 class="text-lg font-bold mb-2">カテゴリ別の記事数</h2>
+          <h2 class="text-lg font-bold mb-2">カテゴリー別の記事数</h2>
           <div class="flex-1 text-muted mt-2 text-sm h-full flex justify-center items-center">グラフは今後追加予定です。</div>
         </div>
         <template #footer>
           <div class="flex justify-center">
-            <UButton label="すべてのカテゴリを見る" color="primary" variant="link" trailing-icon="i-lucide-arrow-right"
+            <UButton label="すべてのカテゴリーを見る" color="primary" variant="link" trailing-icon="i-lucide-arrow-right"
               to="/admin/categories" />
           </div>
         </template>

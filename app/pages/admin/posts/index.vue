@@ -33,8 +33,8 @@ type PostsPageResponse = {
 }
 const keyword = ref('')
 const debouncedKeyword = ref('')
-const categoryId = ref('all')
-const postStatus = ref<PostStatus | 'all'>('all')
+const categoryId = ref('')
+const postStatus = ref('')
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -136,7 +136,7 @@ const columns = [
   },
   {
     accessorKey: 'category',
-    header: 'カテゴリ'
+    header: 'カテゴリー'
   },
   {
     accessorKey: 'status',
@@ -173,7 +173,7 @@ const deletePost = (post: Object) => {
           記事の作成、編集、公開状態の管理を行います。
         </p>
       </div>
-      <UButton icon="i-heroicons-plus">新規作成 </UButton>
+      <UButton icon="i-heroicons-plus" to="/admin/posts/new">新規作成 </UButton>
     </div>
     <!-- grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
@@ -202,8 +202,8 @@ const deletePost = (post: Object) => {
           </template>
         </UInput>
         <div class="flex gap-3">
-          <USelect v-model="categoryId" :items="categoryItems" class="min-w-40" />
-          <USelect v-model="postStatus" :items="statusItems" class="min-w-40" />
+          <USelect v-model="categoryId" :items="categoryItems" placeholder="カテゴリーで絞り込み" class="min-w-40" />
+          <USelect v-model="postStatus" :items="statusItems" placeholder="ステータスで絞り込み" class="min-w-40" />
         </div>
       </div>
       <div class="relative h-full">
