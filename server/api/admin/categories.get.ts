@@ -8,6 +8,11 @@ export default defineEventHandler(async () => {
                 id: true,
                 name: true,
                 slug: true,
+                _count: {
+                    select: {
+                        posts: true
+                    }
+                },
                 createdAt: true,
                 updatedAt: true
             }
@@ -15,10 +20,18 @@ export default defineEventHandler(async () => {
         prisma.category.count(),
         prisma.category.count({
             where: {
-
+                posts: {
+                    some: {}
+                }
             }
         }),
-        prisma.category.count()
+        prisma.category.count({
+            where: {
+                posts: {
+                    none: {}
+                }
+            }
+        })
     ])
     return {
         stats: {
@@ -26,6 +39,13 @@ export default defineEventHandler(async () => {
             using,
             unused
         },
-        categories
+        categories: categories.map(category => ({
+            id: category.id,
+            name: category.name,
+            slug: category.slug,
+            postCount: category._count.posts,
+            createdAt: category.createdAt,
+            updatedAt: category.updatedAt,
+        }))
     }
 })

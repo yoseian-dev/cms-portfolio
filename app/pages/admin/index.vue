@@ -64,9 +64,6 @@ const columns = [
   }
 ]
 
-const formatDate = (date: string) => {
-  return new Intl.DateTimeFormat('ja-JP').format(new Date(date))
-}
 </script>
 
 <template>
