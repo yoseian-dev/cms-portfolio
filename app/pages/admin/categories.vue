@@ -13,7 +13,7 @@ const columns = [
   { id: 'actions', header: '操作' }
 ]
 
-const { data, status, error } = useLazyFetch('/api/admin/categories', {
+const { data, status, error, refresh } = useLazyFetch('/api/admin/categories', {
   server: false
 })
 
@@ -44,20 +44,28 @@ function closeCreateModal() {
   resetForm()
 }
 
+const toast = useToast()
 const isSubmitting = ref(false)
-function createCategory(event: FormSubmitEvent<Schema>) {
+async function createCategory(event: FormSubmitEvent<Schema>) {
   console.log('createCategory...')
   isSubmitting.value = true
   try {
     console.log(event.data)
-
-    // 下一步连接API
-    // await $fetch('/api/admin/categories', {
-    //   method: 'POST',
-    //   body: event.data
-    // })
+    const result = await $fetch('/api/admin/categories', {
+      method: 'POST',
+      body: event.data
+    })
+    console.log('result: ', result)
 
     closeCreateModal()
+    await refresh()
+  } catch (error: any) {
+    console.log(error.data)
+    toast.add({
+      title: 'カテゴリーの作成に失敗しました',
+      description: error.data.data.message,
+      color: 'error'
+    })
   } finally {
     isSubmitting.value = false
   }
