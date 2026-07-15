@@ -1,11 +1,13 @@
 <script lang="ts" setup>
+import type { FormSubmitEvent } from "@nuxt/ui"
+import { z } from "zod"
 definePageMeta({
   layout: 'admin'
 })
 
 const columns = [
   { accessorKey: 'name', header: '名前' },
-  { accessorKey: 'slug', header: '説明' },
+  { accessorKey: 'slug', header: 'スラッグ' },
   { accessorKey: 'postCount', header: '記事数' },
   { accessorKey: 'createdAt', header: '作成日' },
   { id: 'actions', header: '操作' }
@@ -16,6 +18,50 @@ const { data, status, error } = useLazyFetch('/api/admin/categories', {
 })
 
 const categories = computed(() => data.value?.categories)
+
+const isCreateModalOpen = ref(false)
+const schema = z.object({
+  name: z.string().trim().min(1, 'カテゴリー名を入力してください').max(50, 'カテゴリーは50文字以内で入力してください'),
+  slug: z.string().trim().min(1, 'スラッグを入力してください').max(50, 'スラッグは50文字以内で入力してください').regex(
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    'スラッグは半角英数字とハイフンで入力してください'
+  )
+})
+type Schema = z.output<typeof schema>
+
+const form = reactive<Schema>({
+  name: '',
+  slug: ''
+})
+
+function resetForm() {
+  form.name = ''
+  form.slug = ''
+}
+
+function closeCreateModal() {
+  isCreateModalOpen.value = false
+  resetForm()
+}
+
+const isSubmitting = ref(false)
+function createCategory(event: FormSubmitEvent<Schema>) {
+  console.log('createCategory...')
+  isSubmitting.value = true
+  try {
+    console.log(event.data)
+
+    // 下一步连接API
+    // await $fetch('/api/admin/categories', {
+    //   method: 'POST',
+    //   body: event.data
+    // })
+
+    closeCreateModal()
+  } finally {
+    isSubmitting.value = false
+  }
+}
 
 const editPost = (post: Object) => {
   console.log('edit post:', post)
@@ -34,7 +80,23 @@ const deletePost = (post: Object) => {
         <h1 class="text-2xl font-bold">カテゴリー管理</h1>
         <p>カテゴリーの作成、編集、削除を行います。</p>
       </div>
-      <UButton icon="i-heroicons-plus">新規作成</UButton>
+      <UButton icon="i-heroicons-plus" @click="() => { isCreateModalOpen = true }">新規作成</UButton>
+      <UModal v-model:open="isCreateModalOpen" title="カテゴリーの新規作成">
+        <template #body>
+          <UForm :schema="schema" :state="form" class="space-y-5" @submit="createCategory">
+            <UFormField label="名前" name="name">
+              <UInput v-model="form.name" class="w-full" placeholder="カテゴリーを入力" />
+            </UFormField>
+            <UFormField label="スラッグ" name="slug" help="URLで使用する識別子です">
+              <UInput v-model="form.slug" class="w-full" placeholder="例：nuxt" />
+            </UFormField>
+            <div class="flex justify-end gap-3 pt-4">
+              <UButton type="button" variant="outline" color="neutral" @click="closeCreateModal">キャンセル</UButton>
+              <UButton type="submit" color="primary" icon="i-lucide-plus" :loading="isSubmitting">作成する</UButton>
+            </div>
+          </UForm>
+        </template>
+      </UModal>
     </div>
     <!-- grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-0 shrink-0">
