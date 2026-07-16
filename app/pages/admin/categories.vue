@@ -5,6 +5,24 @@ definePageMeta({
   layout: 'admin'
 })
 
+type Category = {
+  id: string,
+  name: string,
+  slug: string,
+  postCount: number,
+  createdAt: string,
+  updatedAt: string
+}
+
+type CategoriesResponse = {
+  stats: {
+    total: number,
+    using: number,
+    unused: number
+  },
+  categories: Category[]
+}
+
 const columns = [
   { accessorKey: 'name', header: '名前' },
   { accessorKey: 'slug', header: 'スラッグ' },
@@ -13,14 +31,14 @@ const columns = [
   { id: 'actions', header: '操作' }
 ]
 
-const { data, status, error, refresh } = useLazyFetch('/api/admin/categories', {
+const { data, status, error, refresh } = useLazyFetch<CategoriesResponse>('/api/admin/categories', {
   server: false
 })
 
 const categories = computed(() => data.value?.categories)
 
-const isCreateModalOpen = ref(false)
 const schema = z.object({
+  id: z.string().nullable(),
   name: z.string().trim().min(1, 'カテゴリー名を入力してください').max(50, 'カテゴリーは50文字以内で入力してください'),
   slug: z.string().trim().min(1, 'スラッグを入力してください').max(50, 'スラッグは50文字以内で入力してください').regex(
     /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
@@ -30,39 +48,41 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const form = reactive<Schema>({
+  id: null,
   name: '',
   slug: ''
 })
 
 function resetForm() {
+  form.id = null
   form.name = ''
   form.slug = ''
 }
 
-function closeCreateModal() {
-  isCreateModalOpen.value = false
-  resetForm()
+const isModalOpen = ref(false)
+function closeModal() {
+  isModalOpen.value = false
+  setTimeout(resetForm, 200)
 }
+const isEditing = computed(() => Boolean(form.id))
 
 const toast = useToast()
 const isSubmitting = ref(false)
-async function createCategory(event: FormSubmitEvent<Schema>) {
-  console.log('createCategory...')
+async function submitCategory(event: FormSubmitEvent<Schema>) {
   isSubmitting.value = true
+  console.log(event.data)
   try {
-    console.log(event.data)
-    const result = await $fetch('/api/admin/categories', {
-      method: 'POST',
-      body: event.data
-    })
-    console.log('result: ', result)
-
-    closeCreateModal()
+    if (isEditing.value) {
+      await editCategorySubmit(event)
+    } else {
+      await createCategorySubmit(event)
+    }
+    closeModal()
     await refresh()
   } catch (error: any) {
     console.log(error.data)
     toast.add({
-      title: 'カテゴリーの作成に失敗しました',
+      title: isEditing.value ? 'カテゴリーの編集に失敗しました' : 'カテゴリーの作成に失敗しました',
       description: error.data.data.message,
       color: 'error'
     })
@@ -70,13 +90,42 @@ async function createCategory(event: FormSubmitEvent<Schema>) {
     isSubmitting.value = false
   }
 }
+async function createCategorySubmit(event: FormSubmitEvent<Schema>) {
 
-const editPost = (post: Object) => {
-  console.log('edit post:', post)
+  const result = await $fetch('/api/admin/categories', {
+    method: 'POST',
+    body: event.data
+  })
+  console.log('result: ', result)
+}
+async function editCategorySubmit(event: FormSubmitEvent<Schema>) {
+
+  if (!event.data.id) {
+    throw new Error('カテゴリーIDがありません')
+  }
+  const result = await $fetch(`/api/admin/categories/${event.data.id}`, {
+    method: 'PATCH',
+    body: {
+      name: event.data.name,
+      slug: event.data.slug
+    }
+  })
+  console.log('result: ', result)
+}
+async function deletelCategorySubmit(event: FormSubmitEvent<Schema>) {
+
 }
 
-const deletePost = (post: Object) => {
-  console.log('delete post:', post)
+const editCategory = (category: Category) => {
+  form.id = category.id
+  form.name = category.name
+  form.slug = category.slug
+  isModalOpen.value = true
+  console.log("isEditing...", isEditing.value)
+}
+
+const deleteCategory = (category: Category) => {
+  console.log('delete category:', category)
 }
 </script>
 
@@ -88,10 +137,10 @@ const deletePost = (post: Object) => {
         <h1 class="text-2xl font-bold">カテゴリー管理</h1>
         <p>カテゴリーの作成、編集、削除を行います。</p>
       </div>
-      <UButton icon="i-heroicons-plus" @click="() => { isCreateModalOpen = true }">新規作成</UButton>
-      <UModal v-model:open="isCreateModalOpen" title="カテゴリーの新規作成">
+      <UButton icon="i-heroicons-plus" @click="() => { isModalOpen = true }">新規作成</UButton>
+      <UModal v-model:open="isModalOpen" :title="isEditing ? 'カテゴリーの編集' : 'カテゴリーの新規作成'">
         <template #body>
-          <UForm :schema="schema" :state="form" class="space-y-5" @submit="createCategory">
+          <UForm :schema="schema" :state="form" class="space-y-5" @submit="submitCategory">
             <UFormField label="名前" name="name">
               <UInput v-model="form.name" class="w-full" placeholder="カテゴリーを入力" />
             </UFormField>
@@ -99,8 +148,10 @@ const deletePost = (post: Object) => {
               <UInput v-model="form.slug" class="w-full" placeholder="例：nuxt" />
             </UFormField>
             <div class="flex justify-end gap-3 pt-4">
-              <UButton type="button" variant="outline" color="neutral" @click="closeCreateModal">キャンセル</UButton>
-              <UButton type="submit" color="primary" icon="i-lucide-plus" :loading="isSubmitting">作成する</UButton>
+              <UButton type="button" variant="outline" color="neutral" @click="closeModal">キャンセル</UButton>
+              <UButton type="submit" color="primary" icon="i-lucide-plus" :loading="isSubmitting">
+                {{ isEditing ? '保存する' : '作成する' }}
+              </UButton>
             </div>
           </UForm>
         </template>
@@ -145,10 +196,10 @@ const deletePost = (post: Object) => {
         <template #actions-cell="{ row }">
           <div class="flex items-center gap-2">
             <UButton size="xs" variant="ghost" color="success" icon="i-heroicons-pencil-square"
-              @click="editPost(row.original)" />
+              @click="editCategory(row.original)" />
 
             <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
-              @click="deletePost(row.original)" />
+              @click="deleteCategory(row.original)" />
           </div>
         </template>
       </UTable>
