@@ -46,10 +46,6 @@ watch(keyword, (value) => {
   }, 300)
 })
 
-onBeforeUnmount(() => {
-  clearTimeout(searchTimer)
-})
-
 const requestQuery = computed(() => ({
   keyword: debouncedKeyword.value || undefined,
   categoryId:
@@ -119,16 +115,6 @@ const posts = computed(() =>
 
 const stats = computed(() => data.value.stats)
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('ja-JP', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-    .format(new Date(value))
-    .replaceAll('/', '-')
-}
-
 const columns = [
   {
     accessorKey: 'title',
@@ -152,13 +138,18 @@ const columns = [
   }
 ]
 
-const editPost = (post: Object) => {
-  console.log('edit post:', post)
+const editPost = (post: PostResponse) => {
+  console.log("editPost", post)
+  navigateTo(`/admin/posts/${post.id}/edit`)
 }
 
 const deletePost = (post: Object) => {
   console.log('delete post:', post)
 }
+
+onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
+})
 </script>
 
 <template>
@@ -213,16 +204,22 @@ const deletePost = (post: Object) => {
           <UIcon name="i-lucide-loader-circle" class="animate-spin size-8" />
         </div>
         <!-- table -->
-        <UTable ref="table" :data="posts" :columns="columns" :sticky="true" class="h-full">
+        <UTable ref="table" :data="data.posts" :columns="columns" :sticky="true" class="h-full">
           <template #empty>
             <div class="py-12 text-center text-gray-500">
               条件に一致する記事がありません。
             </div>
           </template>
           <template #status-cell="{ row }">
-            <UBadge :color="row.original.status === '公開中' ? 'success' : 'neutral'" variant="soft">
-              {{ row.original.status }}
+            <UBadge :color="row.original.status === 'PUBLISHED' ? 'success' : 'neutral'" variant="soft">
+              {{ row.original.status === 'PUBLISHED' ? '公開中' : '下書き' }}
             </UBadge>
+          </template>
+          <template #category-cell="{ row }">
+            {{ row.original.category?.name }}
+          </template>
+          <template #createdAt-cell="{ row }">
+            {{ formatDate(row.original.createdAt) }}
           </template>
           <template #actions-cell="{ row }">
             <div class="flex items-center gap-2">
