@@ -112,9 +112,6 @@ async function editCategorySubmit(event: FormSubmitEvent<Schema>) {
   })
   console.log('result: ', result)
 }
-async function deletelCategorySubmit(event: FormSubmitEvent<Schema>) {
-
-}
 
 const editCategory = (category: Category) => {
   form.id = category.id
@@ -124,9 +121,38 @@ const editCategory = (category: Category) => {
   console.log("isEditing...", isEditing.value)
 }
 
+const selectedCategory = ref<Category | null>(null)
+const isDeleting = ref(false)
+const deleteModalOpen = ref(false)
 const deleteCategory = (category: Category) => {
   console.log('delete category:', category)
+  selectedCategory.value = category
+  deleteModalOpen.value = true
 }
+function closeDeletModal() {
+  deleteModalOpen.value = false
+  selectedCategory.value = null
+}
+async function confirmDelete() {
+  try {
+    isDeleting.value = true
+    await $fetch(`/api/admin/categories/${selectedCategory.value?.id}`, {
+      method: "delete"
+    })
+    refresh()
+    deleteModalOpen.value = false
+  } catch (error: any) {
+    console.log(error.data)
+    toast.add({
+      title: "カテゴリーの削除に失敗しました",
+      description: error.data.data.message ?? "予期しないエラーが発生しました",
+      color: 'error'
+    })
+  } finally {
+    isDeleting.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -138,24 +164,6 @@ const deleteCategory = (category: Category) => {
         <p>カテゴリーの作成、編集、削除を行います。</p>
       </div>
       <UButton icon="i-heroicons-plus" @click="() => { isModalOpen = true }">新規作成</UButton>
-      <UModal v-model:open="isModalOpen" :title="isEditing ? 'カテゴリーの編集' : 'カテゴリーの新規作成'">
-        <template #body>
-          <UForm :schema="schema" :state="form" class="space-y-5" @submit="submitCategory">
-            <UFormField label="名前" name="name">
-              <UInput v-model="form.name" class="w-full" placeholder="カテゴリーを入力" />
-            </UFormField>
-            <UFormField label="スラッグ" name="slug" help="URLで使用する識別子です">
-              <UInput v-model="form.slug" class="w-full" placeholder="例：nuxt" />
-            </UFormField>
-            <div class="flex justify-end gap-3 pt-4">
-              <UButton type="button" variant="outline" color="neutral" @click="closeModal">キャンセル</UButton>
-              <UButton type="submit" color="primary" icon="i-lucide-plus" :loading="isSubmitting">
-                {{ isEditing ? '保存する' : '作成する' }}
-              </UButton>
-            </div>
-          </UForm>
-        </template>
-      </UModal>
     </div>
     <!-- grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-0 shrink-0">
@@ -198,11 +206,44 @@ const deleteCategory = (category: Category) => {
             <UButton size="xs" variant="ghost" color="success" icon="i-heroicons-pencil-square"
               @click="editCategory(row.original)" />
 
-            <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
-              @click="deleteCategory(row.original)" />
+            <UTooltip :text="row.original.postCount > 0 ? '記事は登録されているカテゴリーは削除できません' : 'カテゴリーを削除'">
+              <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
+                @click="deleteCategory(row.original)" :disabled="row.original.postCount > 0" />
+            </UTooltip>
           </div>
         </template>
       </UTable>
     </UCard>
+    <!-- モーダル -->
+    <UModal v-model:open="isModalOpen" :title="isEditing ? 'カテゴリーの編集' : 'カテゴリーの新規作成'">
+      <template #body>
+        <UForm :schema="schema" :state="form" class="space-y-5" @submit="submitCategory">
+          <UFormField label="名前" name="name">
+            <UInput v-model="form.name" class="w-full" placeholder="カテゴリーを入力" />
+          </UFormField>
+          <UFormField label="スラッグ" name="slug" help="URLで使用する識別子です">
+            <UInput v-model="form.slug" class="w-full" placeholder="例：nuxt" />
+          </UFormField>
+          <div class="flex justify-end gap-3 pt-4">
+            <UButton type="button" variant="outline" color="neutral" @click="closeModal">キャンセル</UButton>
+            <UButton type="submit" color="primary" icon="i-lucide-plus" :loading="isSubmitting">
+              {{ isEditing ? '保存する' : '作成する' }}
+            </UButton>
+          </div>
+        </UForm>
+      </template>
+    </UModal>
+    <UModal v-model:open="deleteModalOpen" title="カテゴリーの削除">
+      <template #body>
+        <h2 class="text-lg font-semibold">カテゴリーを削除しますか？</h2>
+        <p class="text-sm text-muted mt-2">
+          「{{ selectedCategory?.name }}」を削除します。この操作は取り消せません。
+        </p>
+        <div class="flex justify-end gap-3">
+          <UButton color="neutral" variant="outline" @click="closeDeletModal">キャンセル</UButton>
+          <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
