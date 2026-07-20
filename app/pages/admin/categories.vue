@@ -139,13 +139,13 @@ async function confirmDelete() {
     await $fetch(`/api/admin/categories/${selectedCategory.value?.id}`, {
       method: "delete"
     })
-    refresh()
+    void refresh()
     deleteModalOpen.value = false
   } catch (error: any) {
     console.log(error.data)
     toast.add({
       title: "カテゴリーの削除に失敗しました",
-      description: error.data.data.message ?? "予期しないエラーが発生しました",
+      description: error.data?.data?.message ?? "予期しないエラーが発生しました",
       color: 'error'
     })
   } finally {
@@ -233,9 +233,8 @@ async function confirmDelete() {
         </UForm>
       </template>
     </UModal>
-    <UModal v-model:open="deleteModalOpen" title="カテゴリーの削除">
+    <UModal v-model:open="deleteModalOpen" title="カテゴリーを削除しますか">
       <template #body>
-        <h2 class="text-lg font-semibold">カテゴリーを削除しますか？</h2>
         <p class="text-sm text-muted mt-2">
           「{{ selectedCategory?.name }}」を削除します。この操作は取り消せません。
         </p>

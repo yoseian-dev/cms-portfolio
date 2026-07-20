@@ -103,15 +103,6 @@ const statusItems = [
     value: 'DRAFT'
   }
 ]
-const posts = computed(() =>
-  data.value.posts.map(post => ({
-    id: post.id,
-    title: post.title,
-    category: post.category?.name ?? '未分類',
-    status: post.status === 'PUBLISHED' ? '公開中' : '下書き',
-    createdAt: formatDate(post.createdAt)
-  }))
-)
 
 const stats = computed(() => data.value.stats)
 
@@ -142,10 +133,40 @@ const editPost = (post: PostResponse) => {
   navigateTo(`/admin/posts/${post.id}/edit`)
 }
 
-const deletePost = (post: Object) => {
-  console.log('delete post:', post)
+const openDeleteModal = ref(false)
+const selectedPost = ref<PostResponse | null>(null)
+function onDeleteCancel() {
+  openDeleteModal.value = false
+  selectedPost.value = null
+}
+const onDeletePost = (post: PostResponse) => {
+  selectedPost.value = post
+  openDeleteModal.value = true
+
 }
 
+const toast = useToast()
+const isDeleting = ref(false)
+async function confirmDelete() {
+  if (!selectedPost.value) {
+    return
+  }
+  isDeleting.value = true
+  try {
+    await $fetch(`/api/admin/posts/${selectedPost.value?.id}`, { method: "DELETE" })
+    void refresh()
+  } catch (error: any) {
+    console.log(error.data)
+    toast.add({
+      title: "記事の削除に失敗しました",
+      description: error.data?.data?.message ?? "予期しないエラーが発生しました",
+      color: 'error'
+    })
+  } finally {
+    isDeleting.value = false
+    openDeleteModal.value = false
+  }
+}
 onBeforeUnmount(() => {
   clearTimeout(searchTimer)
 })
@@ -226,11 +247,21 @@ onBeforeUnmount(() => {
                 @click="editPost(row.original)" />
 
               <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
-                @click="deletePost(row.original)" />
+                @click="onDeletePost(row.original)" />
             </div>
           </template>
         </UTable>
       </div>
     </UCard>
+    <!-- delete modal -->
+    <UModal v-model:open="openDeleteModal" title="記事を削除しますか">
+      <template #body>
+        <p>{{ selectedPost?.title }}を削除します。この操作はとりけしません。</p>
+        <div class="flex justify-end gap-3">
+          <UButton color="neutral" variant="outline" @click="onDeleteCancel">キャンセル</UButton>
+          <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
