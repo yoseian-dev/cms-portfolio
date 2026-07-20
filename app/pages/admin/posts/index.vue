@@ -139,7 +139,6 @@ const columns = [
 ]
 
 const editPost = (post: PostResponse) => {
-  console.log("editPost", post)
   navigateTo(`/admin/posts/${post.id}/edit`)
 }
 

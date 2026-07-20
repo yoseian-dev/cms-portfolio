@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     if (!result.success) {
         throw createError({
             statusCode: 400,
-            statusMessage: '入力内容に誤りがあります',
+            statusMessage: 'Bad Request',
             data: z.flattenError(result.error)
         })
     }

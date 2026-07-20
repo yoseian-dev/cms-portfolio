@@ -32,8 +32,22 @@ function onCancel() {
     navigateTo("/admin/posts")
 }
 
-function onSubmit() {
-
+const toast = useToast()
+async function onSubmit(post: PostFormData) {
+    isSubmitting.value = true
+    try {
+        await $fetch(`/api/admin/posts/${id}`, { method: "PATCH", body: post })
+        navigateTo("/admin/posts")
+    } catch (error: any) {
+        console.log("catch...", error.data.data.message)
+        toast.add({
+            title: "記事の編集に失敗しました",
+            description: error.data?.data?.message ?? "予期しないエラーが発生しました",
+            color: "error"
+        })
+    } finally {
+        isSubmitting.value = false
+    }
 }
 
 
