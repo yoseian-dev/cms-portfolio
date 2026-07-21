@@ -26,7 +26,8 @@ export default defineEventHandler(async (event) => {
             statusCode: 400,
             statusMessage: 'Bad Request',
             data: {
-                message: z.flattenError(result.error)
+                message: "入力して内容をかくにんしてく",
+                errors: z.flattenError(result.error)
             }
         })
     }

@@ -30,13 +30,12 @@ export default defineEventHandler(async (event) => {
     const result = bodySchema.safeParse(body)
 
     if (!result.success) {
-        const errors = z.flattenError(result.error)
-        const errorMessageArray = Object.values(errors.fieldErrors).flat()
         throw createError({
             statusCode: 400,
             statusMessage: "Bad Request",
             data: {
-                message: errorMessageArray.shift()
+                message: "入力して内容をかくにんしてく",
+                errors: z.flattenError(result.error)
             }
         })
     }
