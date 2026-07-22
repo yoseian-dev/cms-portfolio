@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
     const passwordMatched = await bcrypt.compare(password, user.passwordHash)
     if (!passwordMatched) {
         throw createError({
-            statusCode: 400,
+            statusCode: 401,
             statusMessage: "Unauthorized",
             data: {
                 message: "メールアドレスまたはパスワードが正しくありません"
