@@ -21,6 +21,25 @@ const items: NavigationMenuItem[] = [
 
 const open = defineModel<boolean>('open', { default: true })
 
+const toast = useToast()
+const { user, clear } = useUserSession()
+const isLoggingOut = ref(false)
+async function onLogout() {
+  try {
+    isLoggingOut.value = true
+    await clear()
+    await navigateTo("/login")
+  } catch {
+    toast.add({
+      title: 'ログアウトに失敗しました',
+      description: '時間をおいて、もう一度お試しください。',
+      color: 'error'
+    })
+  } finally {
+    isLoggingOut.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -39,7 +58,16 @@ const open = defineModel<boolean>('open', { default: true })
     </template>
 
     <template #default="{ state }">
-      <UNavigationMenu :items="items" orientation="vertical" :ui="{ link: 'p-3 overflow-hidden' }" />
+      <UNavigationMenu :items="items" :collapsed="state === 'collapsed'" orientation="vertical" :ui="{ link: 'py-3' }" />
+    </template>
+    <template #footer="{ state }">
+      <div class="w-full border-t border-default pt-3 space-y-2">
+        <UUser v-if="user && state === 'expanded'" :name="user.name || '管理者'" :description="user.email" :avatar="{
+          icon: 'i-heroicons-user-solid'
+        }" />
+        <UButton class="justify-start" :label="state === 'expanded' ? 'ログアウト' : undefined" icon="i-lucide-log-out"
+          color="error" variant="ghost" block size="xl" @click="onLogout" :loading="isLoggingOut" />
+      </div>
     </template>
   </USidebar>
 </template>
