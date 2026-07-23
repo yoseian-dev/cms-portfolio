@@ -14,9 +14,10 @@ const state = reactive<PostFormData>({
     status: "DRAFT"
 })
 
+const { $api } = useNuxtApp()
 const route = useRoute()
 const id = route.params.id
-const { data: post, status, error } = await useLazyFetch(`/api/admin/posts/${id}`, { server: false })
+const { data: post, status, error } = await useLazyFetch(`/api/admin/posts/${id}`, { server: false, $fetch: $api })
 watch(post, (value) => {
     Object.assign(state, {
         title: value?.title,
@@ -36,10 +37,9 @@ const toast = useToast()
 async function onSubmit(post: PostFormData) {
     isSubmitting.value = true
     try {
-        await $fetch(`/api/admin/posts/${id}`, { method: "PATCH", body: post })
+        await $api(`/api/admin/posts/${id}`, { method: "PATCH", body: post })
         navigateTo("/admin/posts")
     } catch (error: any) {
-        console.log("catch...", error.data.data.message)
         toast.add({
             title: "記事の編集に失敗しました",
             description: error.data?.data?.message ?? "予期しないエラーが発生しました",

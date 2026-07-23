@@ -58,8 +58,10 @@ const requestQuery = computed(() => ({
       : postStatus.value
 }))
 
+const { $api } = useNuxtApp();
 const { data, status, error, refresh } = await useLazyFetch<PostsPageResponse>('/api/admin/posts', {
   server: false,
+  $fetch: $api,
   query: requestQuery,
   default: () => ({
     stats: {
@@ -153,10 +155,9 @@ async function confirmDelete() {
   }
   isDeleting.value = true
   try {
-    await $fetch(`/api/admin/posts/${selectedPost.value?.id}`, { method: "DELETE" })
+    await $api(`/api/admin/posts/${selectedPost.value?.id}`, { method: "DELETE" })
     void refresh()
   } catch (error: any) {
-    console.log(error.data)
     toast.add({
       title: "記事の削除に失敗しました",
       description: error.data?.data?.message ?? "予期しないエラーが発生しました",

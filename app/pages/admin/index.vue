@@ -5,7 +5,8 @@ definePageMeta({
   layout: 'admin'
 })
 
-const { data, status, error } = await useLazyFetch('/api/admin/dashboard', { server: false })
+const { $api } = useNuxtApp()
+const { data, status, error } = await useLazyFetch('/api/admin/dashboard', { server: false, $fetch: $api })
 
 const stats = computed(() => [
   {

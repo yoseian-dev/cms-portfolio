@@ -31,8 +31,10 @@ const columns = [
   { id: 'actions', header: '操作' }
 ]
 
+const { $api } = useNuxtApp()
 const { data, status, error, refresh } = useLazyFetch<CategoriesResponse>('/api/admin/categories', {
-  server: false
+  server: false,
+  $fetch: $api
 })
 
 const categories = computed(() => data.value?.categories)
@@ -70,7 +72,6 @@ const toast = useToast()
 const isSubmitting = ref(false)
 async function submitCategory(event: FormSubmitEvent<Schema>) {
   isSubmitting.value = true
-  console.log(event.data)
   try {
     if (isEditing.value) {
       await editCategorySubmit(event)
@@ -80,7 +81,6 @@ async function submitCategory(event: FormSubmitEvent<Schema>) {
     closeModal()
     await refresh()
   } catch (error: any) {
-    console.log(error.data)
     toast.add({
       title: isEditing.value ? 'カテゴリーの編集に失敗しました' : 'カテゴリーの作成に失敗しました',
       description: error.data.data.message,
@@ -92,25 +92,23 @@ async function submitCategory(event: FormSubmitEvent<Schema>) {
 }
 async function createCategorySubmit(event: FormSubmitEvent<Schema>) {
 
-  const result = await $fetch('/api/admin/categories', {
+  await $api('/api/admin/categories', {
     method: 'POST',
     body: event.data
   })
-  console.log('result: ', result)
 }
 async function editCategorySubmit(event: FormSubmitEvent<Schema>) {
 
   if (!event.data.id) {
     throw new Error('カテゴリーIDがありません')
   }
-  const result = await $fetch(`/api/admin/categories/${event.data.id}`, {
+  await $api(`/api/admin/categories/${event.data.id}`, {
     method: 'PATCH',
     body: {
       name: event.data.name,
       slug: event.data.slug
     }
   })
-  console.log('result: ', result)
 }
 
 const editCategory = (category: Category) => {
@@ -118,14 +116,12 @@ const editCategory = (category: Category) => {
   form.name = category.name
   form.slug = category.slug
   isModalOpen.value = true
-  console.log("isEditing...", isEditing.value)
 }
 
 const selectedCategory = ref<Category | null>(null)
 const isDeleting = ref(false)
 const deleteModalOpen = ref(false)
 const deleteCategory = (category: Category) => {
-  console.log('delete category:', category)
   selectedCategory.value = category
   deleteModalOpen.value = true
 }
@@ -136,13 +132,12 @@ function closeDeletModal() {
 async function confirmDelete() {
   try {
     isDeleting.value = true
-    await $fetch(`/api/admin/categories/${selectedCategory.value?.id}`, {
+    await $api(`/api/admin/categories/${selectedCategory.value?.id}`, {
       method: "delete"
     })
     void refresh()
     deleteModalOpen.value = false
   } catch (error: any) {
-    console.log(error.data)
     toast.add({
       title: "カテゴリーの削除に失敗しました",
       description: error.data?.data?.message ?? "予期しないエラーが発生しました",

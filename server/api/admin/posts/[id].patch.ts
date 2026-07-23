@@ -26,7 +26,6 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    console.log("body", body)
     const result = bodySchema.safeParse(body)
 
     if (!result.success) {

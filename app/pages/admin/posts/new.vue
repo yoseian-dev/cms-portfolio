@@ -13,14 +13,13 @@ const state = reactive<PostFormData>({
     status: 'DRAFT'
 })
 
-
+const { $api } = useNuxtApp()
 const toast = useToast()
 const isSubmitting = ref(false)
 const onSubmit = async (data: PostFormData) => {
     isSubmitting.value = true
-    console.log("....", data)
     try {
-        await $fetch('/api/admin/posts', {
+        await $api('/api/admin/posts', {
             method: 'POST',
             body: data
         })
