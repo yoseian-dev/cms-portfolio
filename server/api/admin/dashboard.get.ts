@@ -1,5 +1,5 @@
-import { PostStatus } from '../../../app/generated/prisma/client'
-import { prisma } from '../../utils/prisma'
+import { PostStatus } from '~/generated/prisma/client'
+
 export default defineEventHandler(async () => {
     try {
         const [

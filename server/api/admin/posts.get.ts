@@ -1,5 +1,5 @@
 // server/api/admin/posts/index.get.ts
-import { PostStatus } from '../../../app/generated/prisma/client'
+import { PostStatus } from '~/generated/prisma/client'
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event)
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
             : ''
 
     const status: PostStatus | undefined =
-        query.status === 'PUBLISHED' || query.status === 'DRAFT'
+        query.status === PostStatus.PUBLISHED || query.status === PostStatus.DRAFT
             ? query.status
             : undefined
 
@@ -72,13 +72,13 @@ export default defineEventHandler(async (event) => {
 
         prisma.post.count({
             where: {
-                status: 'PUBLISHED'
+                status: PostStatus.PUBLISHED
             }
         }),
 
         prisma.post.count({
             where: {
-                status: 'DRAFT'
+                status: PostStatus.DRAFT
             }
         }),
 

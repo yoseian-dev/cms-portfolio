@@ -49,16 +49,19 @@ async function onLogout() {
     body: 'py-0'
   }">
     <template #header="{ state }">
-      <div v-if="state === 'expanded'" class="text-lg font-bold whitespace-nowrap">
-        Yoseian CMS
-      </div>
-      <div v-else class="flex justify-center">
-        <UIcon name="i-lucide-layout-dashboard" class="size-6" />
-      </div>
+      <NuxtLink to="/">
+        <div v-if="state === 'expanded'" class="text-lg font-bold whitespace-nowrap">
+          Yoseian CMS
+        </div>
+        <div v-else class="flex justify-center">
+          <UIcon name="i-lucide-layout-dashboard" class="size-6" />
+        </div>
+      </NuxtLink>
     </template>
 
     <template #default="{ state }">
-      <UNavigationMenu :items="items" :collapsed="state === 'collapsed'" orientation="vertical" :ui="{ link: 'py-3' }" />
+      <UNavigationMenu :items="items" :collapsed="state === 'collapsed'" orientation="vertical"
+        :ui="{ link: 'py-3' }" />
     </template>
     <template #footer="{ state }">
       <div class="w-full border-t border-default pt-3 space-y-2">

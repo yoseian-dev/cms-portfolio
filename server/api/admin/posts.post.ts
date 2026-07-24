@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { prisma } from '../../utils/prisma'
+import { PostStatus } from "~/generated/prisma/client"
 
 const bodySchema = z.object({
     title: z
@@ -22,7 +22,7 @@ const bodySchema = z.object({
         .string()
         .min(1, 'カテゴリーを選択してください'),
 
-    status: z.enum(['DRAFT', 'PUBLISHED'])
+    status: z.enum([PostStatus.DRAFT, PostStatus.PUBLISHED])
 })
 
 export default defineEventHandler(async (event) => {
@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
             status,
             authorId: author.id,
             categoryId: category.id,
-            publishedAt: status === 'PUBLISHED'
+            publishedAt: status === PostStatus.PUBLISHED
                 ? new Date()
                 : null
         },
