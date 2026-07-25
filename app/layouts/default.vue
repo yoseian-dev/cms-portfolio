@@ -4,23 +4,24 @@ const currentYear = new Date().getFullYear()
 <template>
     <div class="flex min-h-screen flex-col bg-default">
         <!-- header -->
-        <header class="border-b border-default">
-            <UContainer class="flex h-16 items-center justify-between">
-                <NuxtLink class="text-xl font-bold text-highlighted" to="/">Yoseian CMS</NuxtLink>
+        <UHeader to="/" title="Yoseian CMS" :toggle="false">
+            <template #right>
                 <UButton to="/admin" variant="ghost" size="lg" label="ダッシュボード" aria-label="管理画面へ" />
-            </UContainer>
-        </header>
+            </template>
+        </UHeader>
         <!-- container -->
-        <main class="flex-1">
+        <main class="flex-1 bg-gray-50">
             <slot />
         </main>
         <!-- footer -->
-        <footer class="border-t border-default">
-            <UContainer class="flex h-16 items-center justify-between">
-                <p class="text-sm text-muted">© {{ currentYear }} Yoseian</p>
+        <UFooter>
+            <template #left>
+                © {{ currentYear }} Yoseian
+            </template>
+            <template #right>
                 <UButton to="https://github.com/yoseian-dev/cms-portfolio" target="_blank" icon="i-lucide-github"
                     color="neutral" variant="link" aria-label="GitHubでソースコードを見る" />
-            </UContainer>
-        </footer>
+            </template>
+        </UFooter>
     </div>
 </template>
