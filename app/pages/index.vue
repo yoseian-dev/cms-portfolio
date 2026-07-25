@@ -120,7 +120,11 @@ function onCategoryChange(categorySlug: string) {
 
 function onPageChange(page: number) {
   const query = { ...route.query }
-  query.page = String(page)
+  if (page === 1) {
+    delete query.page
+  } else {
+    query.page = String(page)
+  }
   navigateTo({ path: "/", query })
 }
 </script>
@@ -137,9 +141,13 @@ function onPageChange(page: number) {
       <!-- left area -->
       <section class="md:col-span-8">
         <h2 class="text-xl font-bold text-highlighted py-5">最近の記事</h2>
+        <div v-if="status === 'pending'" class="space-y-3">
+          <USkeleton v-for="item in 4" :key="item" class="h-28 w-full"></USkeleton>
+        </div>
         <UAlert v-if="error" title="記事を取得できませんでした" color="error" />
         <!-- empty -->
-        <div v-else-if="posts.length === 0" class="rounded-lg border border-dashed border-default py-16 text-center">
+        <div v-else-if="posts.length === 0 && status === 'success'"
+          class="rounded-lg border border-dashed border-default py-16 text-center">
           <UIcon name="i-lucide-file-text" class="mb-3 size-8 text-dimmed" />
           <p class="text-muted">公開されている記事はありません。</p>
         </div>
