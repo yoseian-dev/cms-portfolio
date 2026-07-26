@@ -7,7 +7,8 @@ export default defineEventHandler(async () => {
             publishedPosts,
             draftPosts,
             totalCategories,
-            recentPosts
+            recentPosts,
+            categories
         ] = await Promise.all([
             prisma.post.count(),
 
@@ -43,6 +44,24 @@ export default defineEventHandler(async () => {
                         }
                     }
                 }
+            }),
+            prisma.category.findMany({
+                take: 5,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    _count: {
+                        select: {
+                            posts: true
+                        }
+                    }
+                },
+                orderBy: {
+                    posts: {
+                        _count: 'desc'
+                    }
+                }
             })
         ])
 
@@ -53,7 +72,13 @@ export default defineEventHandler(async () => {
                 draftPosts,
                 totalCategories
             },
-            recentPosts
+            recentPosts,
+            categoryStats: categories.map((category) => ({
+                id: category.id,
+                name: category.name,
+                slug: category.slug,
+                postCount: category._count.posts
+            }))
         }
     } catch (error) {
         console.error('Failed to fetch dashboard data:', error)

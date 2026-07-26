@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DashboardSkeleton from '~/components/admin/DashboardSkeleton.vue';
-
+import CategoryChart from '~/components/admin/CategoryChart.vue';
 definePageMeta({
   layout: 'admin'
 })
@@ -92,25 +92,23 @@ const columns = [
       </UCard>
     </div>
     <!-- main -->
-    <div class="grid xl:grid-cols-12 gap-6 min-h-90 shrink-0">
+    <div class="grid md:grid-cols-12 gap-6 min-h-90 shrink-0">
       <!-- 記事テーブル -->
-      <UCard class="flex flex-col h-full xl:col-span-7" :ui="{ body: 'flex-1', footer: 'p-2' }">
-        <div class="">
-          <h2 class="text-lg font-bold mb-2">最近の記事</h2>
-          <UTable ref="table" :data="recentPosts" :columns="columns" :sticky="true" class="h-full">
-            <template #status-cell="{ row }">
-              <UBadge :color="row.original.status === 'PUBLISHED' ? 'success' : 'neutral'" variant="soft">
-                {{ row.original.status === 'PUBLISHED' ? '公開中' : '下書き' }}
-              </UBadge>
-            </template>
-            <template #category-cell="{ row }">
-              {{ row.original.category?.name }}
-            </template>
-            <template #createdAt-cell="{ row }">
-              {{ formatDate(row.original.createdAt) }}
-            </template>
-          </UTable>
-        </div>
+      <UCard class="flex flex-col h-full md:col-span-7" :ui="{ body: 'sm:p-2', footer: 'p-2' }">
+        <template #title>最近の記事</template>
+        <UTable ref="table" :data="recentPosts" :columns="columns" :sticky="true" class="h-full">
+          <template #status-cell="{ row }">
+            <UBadge :color="row.original.status === 'PUBLISHED' ? 'success' : 'neutral'" variant="soft">
+              {{ row.original.status === 'PUBLISHED' ? '公開中' : '下書き' }}
+            </UBadge>
+          </template>
+          <template #category-cell="{ row }">
+            {{ row.original.category?.name }}
+          </template>
+          <template #createdAt-cell="{ row }">
+            {{ formatDate(row.original.createdAt) }}
+          </template>
+        </UTable>
         <template #footer>
           <div class="flex justify-center">
             <UButton label="すべての記事を見る" color="primary" variant="link" trailing-icon="i-lucide-arrow-right"
@@ -119,11 +117,9 @@ const columns = [
         </template>
       </UCard>
       <!-- カテゴリーテーブル -->
-      <UCard class="flex flex-col h-full xl:col-span-5" :ui="{ body: 'flex-1', footer: 'p-2' }">
-        <div class="h-full">
-          <h2 class="text-lg font-bold mb-2">カテゴリー別の記事数</h2>
-          <div class="flex-1 text-muted mt-2 text-sm h-full flex justify-center items-center">グラフは今後追加予定です。</div>
-        </div>
+      <UCard class="flex flex-col self-start md:col-span-5" :ui="{ footer: 'p-2' }">
+        <template #title>カテゴリー別の記事数</template>
+        <CategoryChart :model-value="data?.categoryStats" />
         <template #footer>
           <div class="flex justify-center">
             <UButton label="すべてのカテゴリーを見る" color="primary" variant="link" trailing-icon="i-lucide-arrow-right"
