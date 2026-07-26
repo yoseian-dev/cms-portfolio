@@ -14,16 +14,20 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter })
 
+const email = process.evn.SEED_ADMIN_EMAIL
+const password = process.env.SEED_ADMIN_PASSWORD
+
 async function main() {
-  const passwordHash = await bcrypt.hash('yoseian', 10)
+
+  const passwordHash = await bcrypt.hash(password, 10)
 
   const admin = await prisma.user.upsert({
     where: {
-      email: 'admin@yoseian.com',
+      email: email,
     },
     update: {},
     create: {
-      email: 'admin@yoseian.com',
+      email: email,
       name: 'Admin',
       passwordHash,
     },

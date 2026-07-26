@@ -54,7 +54,7 @@ function onCancel() {
             <p class="text-sm mt-2 text-muted">新しい記事を作成します。</p>
         </div>
         <!-- main -->
-        <PostForm :initial-values="state" v-model:submitting="isSubmitting" submit-label="保存する" @submit="onSubmit"
+        <PostForm :initial-values="state" :submitting="isSubmitting" submit-label="保存する" @submit="onSubmit"
             @cancel="onCancel" />
     </div>
 </template>

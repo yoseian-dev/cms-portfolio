@@ -264,7 +264,7 @@ onBeforeUnmount(() => {
     <!-- delete modal -->
     <UModal v-model:open="openDeleteModal" title="記事を削除しますか">
       <template #body>
-        <p class="text-muted mb-4">{{ selectedPost?.title }}を削除します。この操作は取り消しません。</p>
+        <p class="text-muted mb-4">{{ selectedPost?.title }}を削除します。この操作は取り消せません。</p>
         <div class="flex justify-end gap-3">
           <UButton color="neutral" variant="outline" @click="onDeleteCancel">キャンセル</UButton>
           <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>

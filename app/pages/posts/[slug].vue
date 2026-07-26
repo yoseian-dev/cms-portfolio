@@ -35,7 +35,7 @@ useSeoMeta({
                 <h1 class="text-3xl font-bold text-highlighted">{{ post.title }}</h1>
                 <p v-if="post.excerpt" class="text-muted my-3">{{ post.excerpt }}</p>
                 <div class="flex justify-center gap-4 text-muted my-5">
-                    <template v-if="post.category">
+                    <template v-if="post?.category">
                         <UBadge variant="outline" size="lg">{{ post.category.name }}</UBadge>
                         <span aria-hidden="true">・</span>
                     </template>

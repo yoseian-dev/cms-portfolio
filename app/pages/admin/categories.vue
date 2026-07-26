@@ -104,7 +104,7 @@ async function submitCategory(event: FormSubmitEvent<Schema>) {
   } catch (error: any) {
     toast.add({
       title: isEditing.value ? 'カテゴリーの編集に失敗しました' : 'カテゴリーの作成に失敗しました',
-      description: error.data.data.message,
+      description: error.data?.data?.message ?? "予期しないエラーが発生しました",
       color: 'error'
     })
   } finally {
@@ -146,7 +146,7 @@ const deleteCategory = (category: Category) => {
   selectedCategory.value = category
   deleteModalOpen.value = true
 }
-function closeDeletModal() {
+function closeDeleteModal() {
   deleteModalOpen.value = false
   selectedCategory.value = null
 }
@@ -221,7 +221,7 @@ async function confirmDelete() {
             <UButton size="xs" variant="ghost" color="success" icon="i-heroicons-pencil-square"
               @click="editCategory(row.original)" />
 
-            <UTooltip :text="row.original.postCount > 0 ? '記事は登録されているカテゴリーは削除できません' : 'カテゴリーを削除'">
+            <UTooltip :text="row.original.postCount > 0 ? '記事が登録されているカテゴリーは削除できません' : 'カテゴリーを削除'">
               <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
                 @click="deleteCategory(row.original)" :disabled="row.original.postCount > 0" />
             </UTooltip>
@@ -254,7 +254,7 @@ async function confirmDelete() {
           「{{ selectedCategory?.name }}」を削除します。この操作は取り消せません。
         </p>
         <div class="flex justify-end gap-3">
-          <UButton color="neutral" variant="outline" @click="closeDeletModal">キャンセル</UButton>
+          <UButton color="neutral" variant="outline" @click="closeDeleteModal">キャンセル</UButton>
           <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>
         </div>
       </template>

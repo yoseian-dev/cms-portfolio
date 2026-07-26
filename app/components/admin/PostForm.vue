@@ -4,9 +4,9 @@ import * as z from "zod"
 import MarkdownEditor from './MarkdownEditor.vue';
 
 const schema = z.object({
-    title: z.string().min(1, 'タイトルを入力してください'),
-    excerpt: z.string().max(200, '概要は200文字以内で入力してください'),
-    content: z.string().min(1, '本文を入力してください'),
+    title: z.string().trim().min(1, 'タイトルを入力してください').max(100, 'タイトルは100文字以内で入力してください'),
+    excerpt: z.string().trim().max(200, '概要は200文字以内で入力してください'),
+    content: z.string().trim().min(1, '本文を入力してください'),
     categoryId: z.string().min(1, 'カテゴリーを選択してください'),
     status: z.enum(['DRAFT', 'PUBLISHED'])
 })

@@ -72,7 +72,7 @@ const columns = [
   <div v-else class="p-6 flex flex-col min-h-0 gap-6 h-full overflow-y-auto">
     <!-- title -->
     <div class="min-h-0 shrink-0">
-      <h1 class="text-2xl font-bold">ダッシュボート</h1>
+      <h1 class="text-2xl font-bold">ダッシュボード</h1>
       <p class="text-muted">CMS全体の状況を確認できます。</p>
     </div>
     <!-- card -->

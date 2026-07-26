@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const post = prisma.post.findUnique({
+    const post = await prisma.post.findUnique({
         where: { slug, status: PostStatus.PUBLISHED },
         select: {
             id: true,

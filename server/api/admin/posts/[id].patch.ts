@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
             statusCode: 400,
             statusMessage: "Bad Request",
             data: {
-                message: "入力して内容をかくにんしてく",
+                message: "入力内容を確認してください",
                 errors: z.flattenError(result.error)
             }
         })
@@ -62,11 +62,13 @@ export default defineEventHandler(async (event) => {
             }
         })
     }
+
+    const publishedAt = existingPost.publishedAt ?? new Date()
     const updatedPost = await prisma.post.update({
         where: { id },
         data: {
             ...result.data,
-            publishedAt: result.data.status === PostStatus.PUBLISHED ? new Date() : null
+            publishedAt: result.data.status === PostStatus.PUBLISHED ? publishedAt : null
         }
     })
 
