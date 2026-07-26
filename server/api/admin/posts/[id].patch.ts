@@ -64,7 +64,10 @@ export default defineEventHandler(async (event) => {
     }
     const updatedPost = await prisma.post.update({
         where: { id },
-        data: result.data
+        data: {
+            ...result.data,
+            publishedAt: result.data.status === PostStatus.PUBLISHED ? new Date() : null
+        }
     })
 
     return { post: updatedPost }

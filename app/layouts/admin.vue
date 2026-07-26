@@ -22,11 +22,7 @@ const version = '0.1.0'
             @click="() => { sidebarCollapsed = !sidebarCollapsed }" />
         </template>
         <template #right>
-          <div>
-            <UButton color="neutral" variant="ghost" icon="i-heroicons-magnifying-glass" aria-label="Search" />
-            <UButton color="neutral" variant="ghost" icon="i-heroicons-bell-alert" aria-label="Notifications" />
-            <UButton color="neutral" variant="ghost" icon="i-heroicons-sun" aria-label="Model Switch" />
-          </div>
+          <UColorModeButton />
         </template>
       </UDashboardNavbar>
       <!-- main -->

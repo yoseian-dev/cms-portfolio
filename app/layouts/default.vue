@@ -6,7 +6,8 @@ const currentYear = new Date().getFullYear()
         <!-- header -->
         <UHeader to="/" title="Yoseian CMS" :toggle="false">
             <template #right>
-                <UButton to="/admin" variant="ghost" size="lg" label="ダッシュボード" aria-label="管理画面へ" />
+                <UButton to="/admin" variant="ghost" color="neutral" size="lg" label="ダッシュボード" aria-label="管理画面へ" />
+                <UColorModeButton />
             </template>
         </UHeader>
         <!-- container -->

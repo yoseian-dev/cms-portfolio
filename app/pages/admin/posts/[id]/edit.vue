@@ -64,7 +64,7 @@ async function onSubmit(post: PostFormData) {
         <div class="relative">
             <!-- loading... -->
             <div v-if="status === 'idle' || status === 'pending'" class="absolute inset-0 z-10 flex items-center justify-center
-           bg-white/60 backdrop-blur-[1px]">
+           bg-muted/60 backdrop-blur-[1px]">
                 <UIcon name="i-lucide-loader-circle" class="animate-spin size-8" />
             </div>
             <PostForm :initial-values="state" :submitting="isSubmitting" submit-label="保存する" @submit="onSubmit"
