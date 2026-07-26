@@ -62,7 +62,7 @@ async function onLogout() {
           icon: 'i-heroicons-user-solid'
         }" />
         <UButton class="justify-start" :label="!collapsed ? 'ログアウト' : undefined" icon="i-lucide-log-out" color="error"
-          variant="ghost" block size="xl" @click="onLogout" :loading="isLoggingOut" />
+          variant="ghost" block size="xl" :loading="isLoggingOut" @click="onLogout" />
       </div>
     </template>
   </UDashboardSidebar>

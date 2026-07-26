@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
             }
         })
     }
-    let existingPost = await prisma.post.findUnique({
+    const existingPost = await prisma.post.findUnique({
         where: { id }
     })
     if (!existingPost) {

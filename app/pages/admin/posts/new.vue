@@ -30,10 +30,10 @@ const onSubmit = async (data: PostFormData) => {
         })
 
         await navigateTo('/admin/posts')
-    } catch (error: any) {
+    } catch (error: unknown) {
         toast.add({
             title: '記事の作成に失敗しました',
-            description: error.data?.data?.message ?? '予期しないエラーが発生しました',
+            description: getApiErrorMessage(error),
             color: 'error'
         })
     } finally {

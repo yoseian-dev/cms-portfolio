@@ -2,7 +2,6 @@
 import type { FormSubmitEvent } from '@nuxt/ui';
 import z from 'zod';
 
-
 useHead({
     title: "ログイン | Yoseian CMS"
 })
@@ -28,10 +27,10 @@ async function onLogin(event: FormSubmitEvent<LoginSchema>) {
         await $fetch("/api/auth/login", { method: "POST", body: event.data })
         await fetchSession()
         navigateTo("/admin")
-    } catch (error: any) {
+    } catch (error: unknown) {
         toast.add({
             title: "ログインに失敗しました",
-            description: error.data?.data?.message ?? "予期しないエラーが発生しました",
+            description: getApiErrorMessage(error),
             color: 'error'
         })
     } finally {
@@ -54,12 +53,11 @@ async function onLogin(event: FormSubmitEvent<LoginSchema>) {
             <!-- form -->
             <UForm class="space-y-5" :state="form" :schema="loginSchema" @submit="onLogin">
                 <UFormField label="メールアドレス" name="email">
-                    <UInput v-model="form.email" size="xl" class="w-full" type="email" placeholder="admin@example.com">
-                    </UInput>
+                    <UInput v-model="form.email" size="xl" class="w-full" type="email"
+                        placeholder="admin@example.com" />
                 </UFormField>
                 <UFormField label="パスワード" name="password">
-                    <UInput v-model="form.password" size="xl" class="w-full" type="password" placeholder="パスワードを入力">
-                    </UInput>
+                    <UInput v-model="form.password" size="xl" class="w-full" type="password" placeholder="パスワードを入力" />
                 </UFormField>
                 <UButton class="mt-2" type="submit" block size="xl" :loading="isLogging">ログイン</UButton>
             </UForm>

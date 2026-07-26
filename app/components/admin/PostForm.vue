@@ -43,9 +43,7 @@ watch(() => props.initialValues, (value: PostFormData) => {
 
 const categoryItems = ref<{ label: string, value: string }[]>([])
 useFetch('/api/admin/categories').then(({
-    data: categories,
-    status: categoriesStatus,
-    error: categoriesError
+    data: categories
 }) => {
     categoryItems.value = categories.value?.categories?.map(category => ({
         label: category.name,

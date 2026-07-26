@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from "@nuxt/ui"
 import { z } from "zod"
+import { getApiErrorMessage } from "~/utils/api-error"
+
 definePageMeta({
   layout: 'admin'
 })
@@ -32,7 +34,7 @@ const columns = [
 ]
 
 const { $api } = useNuxtApp()
-const { data, status, error, refresh } = useLazyFetch<CategoriesResponse>('/api/admin/categories', {
+const { data, status, refresh } = useLazyFetch<CategoriesResponse>('/api/admin/categories', {
   server: false,
   $fetch: $api
 })
@@ -101,10 +103,10 @@ async function submitCategory(event: FormSubmitEvent<Schema>) {
     }
     closeModal()
     await refresh()
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: isEditing.value ? 'カテゴリーの編集に失敗しました' : 'カテゴリーの作成に失敗しました',
-      description: error.data?.data?.message ?? "予期しないエラーが発生しました",
+      description: getApiErrorMessage(error),
       color: 'error'
     })
   } finally {
@@ -158,10 +160,10 @@ async function confirmDelete() {
     })
     void refresh()
     deleteModalOpen.value = false
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: "カテゴリーの削除に失敗しました",
-      description: error.data?.data?.message ?? "予期しないエラーが発生しました",
+      description: getApiErrorMessage(error),
       color: 'error'
     })
   } finally {
@@ -223,7 +225,7 @@ async function confirmDelete() {
 
             <UTooltip :text="row.original.postCount > 0 ? '記事が登録されているカテゴリーは削除できません' : 'カテゴリーを削除'">
               <UButton size="xs" variant="ghost" color="error" icon="i-heroicons-trash"
-                @click="deleteCategory(row.original)" :disabled="row.original.postCount > 0" />
+                :disabled="row.original.postCount > 0" @click="deleteCategory(row.original)" />
             </UTooltip>
           </div>
         </template>
@@ -255,7 +257,7 @@ async function confirmDelete() {
         </p>
         <div class="flex justify-end gap-3">
           <UButton color="neutral" variant="outline" @click="closeDeleteModal">キャンセル</UButton>
-          <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>
+          <UButton color="error" :loading="isDeleting" @click="confirmDelete">削除する</UButton>
         </div>
       </template>
     </UModal>

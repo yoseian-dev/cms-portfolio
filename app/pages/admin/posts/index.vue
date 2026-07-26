@@ -59,7 +59,7 @@ const requestQuery = computed(() => ({
 }))
 
 const { $api } = useNuxtApp();
-const { data, status, error, refresh } = await useLazyFetch<PostsPageResponse>('/api/admin/posts', {
+const { data, status, refresh } = await useLazyFetch<PostsPageResponse>('/api/admin/posts', {
   server: false,
   $fetch: $api,
   query: requestQuery,
@@ -81,7 +81,7 @@ const categoryItems = computed(() => [
     label: 'すべて',
     value: 'all'
   },
-  ...data.value?.categories.map(category => ({
+  ...(data.value?.categories ?? []).map(category => ({
     label: category.name,
     value: category.id
   })),
@@ -106,7 +106,6 @@ const statusItems = [
   }
 ]
 
-const stats = computed(() => data.value.stats)
 const statItems = computed(() => [
   {
     label: '全記事',
@@ -167,10 +166,10 @@ async function confirmDelete() {
   try {
     await $api(`/api/admin/posts/${selectedPost.value?.id}`, { method: "DELETE" })
     void refresh()
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: "記事の削除に失敗しました",
-      description: error.data?.data?.message ?? "予期しないエラーが発生しました",
+      description: getApiErrorMessage(error),
       color: 'error'
     })
   } finally {
@@ -267,7 +266,7 @@ onBeforeUnmount(() => {
         <p class="text-muted mb-4">{{ selectedPost?.title }}を削除します。この操作は取り消せません。</p>
         <div class="flex justify-end gap-3">
           <UButton color="neutral" variant="outline" @click="onDeleteCancel">キャンセル</UButton>
-          <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>
+          <UButton color="error" :loading="isDeleting" @click="confirmDelete">削除する</UButton>
         </div>
       </template>
     </UModal>

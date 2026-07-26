@@ -23,7 +23,7 @@ const maxCount = computed(() => {
                 <span class="flex-1 rounded-full bg-gray-200 dark:bg-gray-700 h-3">
                     <div class="bg-primary rounded-full h-full" :style="{
                         width: `${item.postCount / maxCount * 100}%`
-                    }"></div>
+                    }" />
                 </span>
                 <span class="text-muted">{{ item.postCount }}</span>
             </div>
