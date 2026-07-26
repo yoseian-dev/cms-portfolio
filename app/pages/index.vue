@@ -137,12 +137,12 @@ function onPageChange(page: number) {
         <p class="text-muted">Nuxt、TypeScript、Vue.jsについて学んだことを発信しています。</p>
       </UContainer>
     </section>
-    <UContainer class="grid md:grid-cols-12 gap-3 pb-3">
+    <UContainer class="grid grid-cols-1 md:grid-cols-12 gap-3 pb-3">
       <!-- left area -->
       <section class="md:col-span-8">
         <h2 class="text-xl font-bold text-highlighted py-5">最近の記事</h2>
-        <div v-if="status === 'pending'" class="space-y-3">
-          <USkeleton v-for="item in 4" :key="item" class="h-28 w-full"></USkeleton>
+        <div v-if="status === 'pending' && posts.length === 0" class="space-y-3">
+          <USkeleton v-for="item in 4" :key="item" class="h-28 w-full bg-gray-200 dark:bg-gray-700"></USkeleton>
         </div>
         <UAlert v-if="error" title="記事を取得できませんでした" color="error" />
         <!-- empty -->
@@ -194,7 +194,7 @@ function onPageChange(page: number) {
         <nav>
           <UCard title="カテゴリー" :ui="{ body: 'flex flex-col gap-2' }">
             <template v-for="schema in categoryItems" :key="schema.id">
-              <UButton type="button" class="flex bg-gray-100 hover:bg-primary/5" variant="ghost" color="neutral"
+              <UButton type="button" class="flex bg-muted hover:bg-primary/5" variant="ghost" color="neutral"
                 size="sm" :class="{ 'bg-primary/10': selectedCategory === schema.slug }"
                 @click="onCategoryChange(schema.slug)">
                 <span class="min-w-0 flex-1 truncate text-left transition">{{ schema.name }}</span>

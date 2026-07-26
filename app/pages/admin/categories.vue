@@ -151,12 +151,12 @@ async function confirmDelete() {
 </script>
 
 <template>
-  <div class="p-6 flex flex-col gap-6 h-full">
+  <div class="p-6 space-y-6 min-h-full overflow-y-auto">
     <!-- title -->
-    <div class="flex justify-between items-center min-h-0 shrink-0">
-      <div class="">
+    <div class="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center min-h-0 shrink-0">
+      <div>
         <h1 class="text-2xl font-bold">カテゴリー管理</h1>
-        <p>カテゴリーの作成、編集、削除を行います。</p>
+        <p class="text-muted">カテゴリーの作成、編集、削除を行います。</p>
       </div>
       <UButton icon="i-heroicons-plus" @click="() => { isModalOpen = true }">新規作成</UButton>
     </div>
@@ -181,7 +181,7 @@ async function confirmDelete() {
     }">
       <!-- loading... -->
       <div v-if="status === 'idle' || status === 'pending'" class="absolute inset-0 z-10 flex items-center justify-center
-           bg-white/60 backdrop-blur-[1px]">
+           bg-muted/60 backdrop-blur-[1px]">
         <UIcon name="i-lucide-loader-circle" class="animate-spin size-8" />
       </div>
       <UTable ref="table" :data="categories" :columns="columns" :sticky="true" class="h-full">
@@ -230,7 +230,7 @@ async function confirmDelete() {
     </UModal>
     <UModal v-model:open="deleteModalOpen" title="カテゴリーを削除しますか">
       <template #body>
-        <p class="text-sm text-muted mt-2">
+        <p class="text-sm text-muted mb-4">
           「{{ selectedCategory?.name }}」を削除します。この操作は取り消せません。
         </p>
         <div class="flex justify-end gap-3">

@@ -174,14 +174,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="p-6 flex flex-col gap-6 min-h-0 h-full">
+  <div class="p-6 space-y-6 min-h-full overflow-y-auto">
     <!-- title -->
-    <div class="flex justify-between items-center shrink-0">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center shrink-0 gap-3">
       <div>
         <h1 class="text-2xl font-bold">
           記事管理
         </h1>
-        <p class="text-gray-500">
+        <p class="text-muted">
           記事の作成、編集、公開状態の管理を行います。
         </p>
       </div>
@@ -203,29 +203,27 @@ onBeforeUnmount(() => {
       </UCard>
     </div>
     <!-- table card -->
-    <UCard class="flex-1 min-h-0" :ui="{
-      body: 'h-full min-h-0 flex flex-col'
-    }">
-      <div class="flex justify-between min-h-0 items-center mb-4 shrink-0">
+    <UCard>
+      <div class="flex flex-col sm:flex-row justify-between gap-3 shrink-0">
         <UInput v-model="keyword" placeholder="記事を検索..." leading-icon="i-heroicons-magnifying-glass">
           <template #trailing>
             <UButton v-if="keyword" color="neutral" variant="link" size="xs" icon="i-heroicons-x-mark"
               aria-label="検索キーワードをクリア" @click="() => { keyword = '' }" />
           </template>
         </UInput>
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <USelect v-model="categoryId" :items="categoryItems" placeholder="カテゴリーで絞り込み" class="min-w-40" />
           <USelect v-model="postStatus" :items="statusItems" placeholder="ステータスで絞り込み" class="min-w-40" />
         </div>
       </div>
-      <div class="relative h-full">
+      <div class="relative">
         <!-- loading... -->
         <div v-if="status === 'idle' || status === 'pending'" class="absolute inset-0 z-10 flex items-center justify-center
-           bg-white/60 backdrop-blur-[1px]">
+           bg-muted/50 backdrop-blur-[1px]">
           <UIcon name="i-lucide-loader-circle" class="animate-spin size-8" />
         </div>
         <!-- table -->
-        <UTable ref="table" :data="data.posts" :columns="columns" :sticky="true" class="h-full">
+        <UTable ref="table" :data="data.posts" :columns="columns" :sticky="true" class="">
           <template #empty>
             <div class="py-12 text-center text-gray-500">
               条件に一致する記事がありません。
@@ -257,7 +255,7 @@ onBeforeUnmount(() => {
     <!-- delete modal -->
     <UModal v-model:open="openDeleteModal" title="記事を削除しますか">
       <template #body>
-        <p>{{ selectedPost?.title }}を削除します。この操作は取り消しません。</p>
+        <p class="text-muted mb-4">{{ selectedPost?.title }}を削除します。この操作は取り消しません。</p>
         <div class="flex justify-end gap-3">
           <UButton color="neutral" variant="outline" @click="onDeleteCancel">キャンセル</UButton>
           <UButton color="error" @click="confirmDelete" :loading="isDeleting">削除する</UButton>

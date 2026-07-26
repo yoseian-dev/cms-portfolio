@@ -10,7 +10,7 @@ const currentYear = new Date().getFullYear()
             </template>
         </UHeader>
         <!-- container -->
-        <main class="flex-1 bg-gray-50">
+        <main class="flex-1 flex flex-col bg-muted min-h-0">
             <slot />
         </main>
         <!-- footer -->

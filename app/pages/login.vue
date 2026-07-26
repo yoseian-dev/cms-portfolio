@@ -42,8 +42,8 @@ async function onLogin(event: FormSubmitEvent<LoginSchema>) {
 </script>
 
 <template>
-    <div class="flex justify-center items-center min-h-screen bg-muted">
-        <UCard class="w-full max-w-md">
+    <div class="my-auto">
+        <UCard class="max-w-md mx-auto">
             <!-- title -->
             <template #header>
                 <div class="text-center">

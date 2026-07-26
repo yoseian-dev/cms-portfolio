@@ -1,37 +1,43 @@
 <script setup lang="ts">
 
 const sidebarOpen = ref(true)
-
+const sidebarCollapsed = ref(false)
 const currentYear = new Date().getFullYear()
-
 const version = '0.1.0'
 
 </script>
 
 <template>
   <div class="h-screen flex overflow-hidden">
-    <AdminSidebar v-model:open="sidebarOpen" />
-
-    <div class="min-h-0 flex flex-col flex-1">
-
+    <!-- left sidebar -->
+    <AdminSidebar v-model:open="sidebarOpen" v-model:collapsed="sidebarCollapsed" />
+    <!-- right content -->
+    <div class="min-h-0 min-w-0 flex flex-col flex-1">
       <!-- header -->
-      <AdminTopbar class="shrink-0" @toggle-sidebar="sidebarOpen = !sidebarOpen" />
-
+      <UDashboardNavbar :toggle="false">
+        <template #leading>
+          <UButton color="neutral" variant="ghost" icon="i-lucide-menu" aria-label="Menu" class="inline-block lg:hidden"
+            @click="() => { sidebarOpen = !sidebarOpen }" />
+          <UButton color="neutral" variant="ghost" icon="i-lucide-menu" aria-label="Menu" class="hidden lg:inline-block"
+            @click="() => { sidebarCollapsed = !sidebarCollapsed }" />
+        </template>
+        <template #right>
+          <div>
+            <UButton color="neutral" variant="ghost" icon="i-heroicons-magnifying-glass" aria-label="Search" />
+            <UButton color="neutral" variant="ghost" icon="i-heroicons-bell-alert" aria-label="Notifications" />
+            <UButton color="neutral" variant="ghost" icon="i-heroicons-sun" aria-label="Model Switch" />
+          </div>
+        </template>
+      </UDashboardNavbar>
       <!-- main -->
-      <main class="flex-1 min-h-0 bg-gray-100">
+      <main class="flex-1 flex flex-col min-h-0 bg-muted">
         <slot />
       </main>
-
       <!-- footer -->
-      <footer class="flex justify-between items-center shrink-0 py-4 px-6 border-t border-default bg-default text-sm text-muted relative">
-        <p>
-          © {{ currentYear }} Yoseian
-        </p>
-        <p>
-          バージョン {{ version }}
-        </p>
-      </footer>
+      <UFooter>
+        <template #left>© {{ currentYear }} Yoseian</template>
+        <template #right>バージョン {{ version }}</template>
+      </UFooter>
     </div>
-
   </div>
 </template>
