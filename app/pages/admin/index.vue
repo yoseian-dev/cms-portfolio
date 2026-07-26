@@ -60,7 +60,7 @@ const columns = [
     header: 'ステータス'
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'updatedAt',
     header: '更新日'
   }
 ]
@@ -105,8 +105,8 @@ const columns = [
           <template #category-cell="{ row }">
             {{ row.original.category?.name }}
           </template>
-          <template #createdAt-cell="{ row }">
-            {{ formatDate(row.original.createdAt) }}
+          <template #updatedAt-cell="{ row }">
+            {{ formatDate(row.original.updatedAt) }}
           </template>
         </UTable>
         <template #footer>

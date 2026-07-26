@@ -37,8 +37,29 @@ const { data, status, error, refresh } = useLazyFetch<CategoriesResponse>('/api/
   $fetch: $api
 })
 
+const stats = computed(() => [
+  {
+    label: '全カテゴリー',
+    value: data.value?.stats?.total || 0,
+    icon: 'i-heroicons-folder-open',
+    iconClass: 'text-emerald-600 dark:text-emerald-400',
+    iconBgClass: 'bg-emerald-50 dark:bg-emerald-950/50'
+  }, {
+    label: '使用中',
+    value: data.value?.stats?.using || 0,
+    icon: 'i-heroicons-check-circle',
+    iconClass: 'text-emerald-600 dark:text-emerald-400',
+    iconBgClass: 'bg-emerald-50 dark:bg-emerald-950/50'
+  }, {
+    label: '未使用',
+    value: data.value?.stats?.unused || 0,
+    icon: 'i-heroicons-x-circle',
+    iconClass: 'text-gray-600 dark:text-gray-400',
+    iconBgClass: 'bg-gray-50 dark:bg-gray-950/50'
+  }
+]
+)
 const categories = computed(() => data.value?.categories)
-
 const schema = z.object({
   id: z.string().nullable(),
   name: z.string().trim().min(1, 'カテゴリー名を入力してください').max(50, 'カテゴリーは50文字以内で入力してください'),
@@ -162,17 +183,16 @@ async function confirmDelete() {
     </div>
     <!-- grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-0 shrink-0">
-      <UCard>
-        <div class="mb-1">全カテゴリー</div>
-        <div class="text-2xl font-bold min-h-[1lh]">{{ data?.stats?.total }}</div>
-      </UCard>
-      <UCard>
-        <div class="mb-1">使用中</div>
-        <div class="text-2xl font-bold min-h-[1lh]">{{ data?.stats?.using }}</div>
-      </UCard>
-      <UCard>
-        <div class="mb-1">未使用</div>
-        <div class="text-2xl font-bold min-h-[1lh]">{{ data?.stats?.unused }}</div>
+      <UCard v-for="stat in stats" :key="stat.label">
+        <div class="flex gap-4">
+          <div class="flex size-14 shrink-0 items-center justify-center rounded-full" :class="stat.iconBgClass">
+            <UIcon :name="stat.icon" class="size-6" :class="stat.iconClass" />
+          </div>
+          <div>
+            <div class="mb-1">{{ stat.label }}</div>
+            <div class="text-2xl font-bold min-h-[1lh]">{{ stat.value }}</div>
+          </div>
+        </div>
       </UCard>
     </div>
     <!-- テーブル -->

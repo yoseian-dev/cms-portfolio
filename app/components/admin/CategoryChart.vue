@@ -14,6 +14,7 @@ const MaxCount = computed(() => {
 })
 
 </script>
+
 <template>
     <div v-if="props.modelValue" class="flex flex-col gap-3">
         <template v-for="item in props.modelValue" :key="item.id">

@@ -107,28 +107,38 @@ const statusItems = [
 ]
 
 const stats = computed(() => data.value.stats)
-
-const columns = [
+const statItems = computed(() => [
   {
-    accessorKey: 'title',
-    header: 'タイトル'
+    label: '全記事',
+    value: data.value?.stats.total || 0,
+    description: 'すべての記事',
+    icon: 'i-lucide-notebook-tabs',
+    iconClass: 'text-emerald-600 dark:text-emerald-400',
+    iconBgClass: 'bg-emerald-50 dark:bg-emerald-950/50'
   },
   {
-    accessorKey: 'category',
-    header: 'カテゴリー'
+    label: '公開中',
+    value: data.value?.stats.published || 0,
+    description: '公開されている記事',
+    icon: 'i-lucide-send',
+    iconClass: 'text-blue-600 dark:text-blue-400',
+    iconBgClass: 'bg-blue-50 dark:bg-blue-950/50'
   },
   {
-    accessorKey: 'status',
-    header: 'ステータス'
-  },
-  {
-    accessorKey: 'createdAt',
-    header: '作成日'
-  },
-  {
-    id: 'actions',
-    header: '操作'
+    label: '下書き',
+    value: data.value?.stats.draft || 0,
+    description: '下書きの記事',
+    icon: 'i-lucide-pencil-line',
+    iconClass: 'text-amber-600 dark:text-amber-400',
+    iconBgClass: 'bg-amber-50 dark:bg-amber-950/50'
   }
+]);
+const columns = [
+  { accessorKey: 'title', header: 'タイトル' },
+  { accessorKey: 'category', header: 'カテゴリー' },
+  { accessorKey: 'status', header: 'ステータス' },
+  { accessorKey: 'createdAt', header: '作成日' },
+  { id: 'actions', header: '操作' }
 ]
 
 const editPost = (post: PostResponse) => {
@@ -189,17 +199,16 @@ onBeforeUnmount(() => {
     </div>
     <!-- grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
-      <UCard>
-        <div class="mb-1">全記事</div>
-        <div class="text-2xl font-bold">{{ stats.total }}</div>
-      </UCard>
-      <UCard>
-        <div class="mb-1">公開中</div>
-        <div class="text-2xl font-bold">{{ stats.published }}</div>
-      </UCard>
-      <UCard>
-        <div class="mb-1">下書き</div>
-        <div class="text-2xl font-bold">{{ stats.draft }}</div>
+      <UCard v-for="stat in statItems" :key="stat.label">
+        <div class="flex gap-4">
+          <div class="flex size-14 shrink-0 items-center justify-center rounded-full" :class="stat.iconBgClass">
+            <UIcon :name="stat.icon" class="size-6" :class="stat.iconClass" />
+          </div>
+          <div>
+            <div class="mb-1">{{ stat.label }}</div>
+            <div class="text-2xl font-bold min-h-[1lh]">{{ stat.value }}</div>
+          </div>
+        </div>
       </UCard>
     </div>
     <!-- table card -->
