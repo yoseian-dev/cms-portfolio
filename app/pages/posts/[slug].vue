@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import MarkdownRenderer from "~/components/MarkdownRenderer.vue"
 interface PublicPostDetail {
     id: string
     title: string
@@ -50,9 +50,7 @@ useSeoMeta({
         </header>
         <UContainer class="max-w-5xl py-8">
             <UCard>
-                <div class="whitespace-pre-wrap leading-8 text-default">
-                    {{ post.content }}
-                </div>
+                <MarkdownRenderer :content="post.content" />
                 <template #footer>
                     <UButton icon="i-heroicons-arrow-left-20-solid" label="記事一覧に戻る" to="/" variant="ghost" />
                 </template>

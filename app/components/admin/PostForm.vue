@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, RadioGroupItem } from '@nuxt/ui'
 import * as z from "zod"
+import MarkdownEditor from './MarkdownEditor.vue';
 
 const schema = z.object({
     title: z.string().min(1, 'タイトルを入力してください'),
@@ -90,7 +91,7 @@ function onSubmit(event: FormSubmitEvent<PostFormData>) {
                     <UTextarea v-model="state.excerpt" class="w-full" placeholder="記事の概要を入力してください（任意）" />
                 </UFormField>
                 <UFormField label="本文" name="content" required class="">
-                    <UTextarea v-model="state.content" class="w-full h-full" placeholder="記事本文を入力してください" :rows="16" />
+                    <MarkdownEditor v-model="state.content" content-type="markdown" />
                 </UFormField>
             </div>
         </UCard>

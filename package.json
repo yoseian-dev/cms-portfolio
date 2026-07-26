@@ -10,10 +10,13 @@
     "postinstall": "prisma generate && nuxt prepare"
   },
   "dependencies": {
+    "@comark/vue": "^0.5.1",
     "@nuxt/ui": "^4.8.2",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@tailwindcss/typography": "^0.5.20",
     "bcryptjs": "^3.0.3",
+    "comark": "^0.5.1",
     "nuxt": "^4.4.8",
     "nuxt-auth-utils": "^0.5.29",
     "pg": "^8.21.0",
