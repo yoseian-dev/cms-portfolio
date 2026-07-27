@@ -13,8 +13,6 @@ Nuxt 4、TypeScript、Prisma、PostgreSQL を使用して開発した、ブロ�
 
 ## Screenshots
 
-スクリーンショットを追加する場合は、以下のような構成を想定しています。
-
 ```text
 docs/
 └── images/
@@ -27,33 +25,23 @@ docs/
 
 ### 公開トップページ
 
-```md
 ![公開トップページ](./docs/images/public-home.png)
-```
 
 ### 記事詳細ページ
 
-```md
 ![記事詳細ページ](./docs/images/post-detail.png)
-```
 
 ### 管理ダッシュボード
 
-```md
 ![管理ダッシュボード](./docs/images/admin-dashboard.png)
-```
 
 ### 記事管理
 
-```md
 ![記事管理](./docs/images/admin-posts.png)
-```
 
 ### 記事編集
 
-```md
 ![記事編集](./docs/images/post-editor.png)
-```
 
 ## Features
 
