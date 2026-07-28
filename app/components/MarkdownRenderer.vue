@@ -14,19 +14,12 @@ defineProps<{
         prose-code:rounded
         prose-code:px-1.5
         prose-code:py-0.5
+        prose-code:border
+        prose-code:border-muted
         prose-code:bg-gray-100
-        prose-code:text-gray-800
         dark:prose-code:bg-gray-800
-        dark:prose-code:text-gray-100
-        prose-li:my-1
-        prose-h2:mt-10
-        prose-h2:mb-4
-        prose-h3:mt-8
-        prose-h3:mb-3
-        prose-p:leading-8
-        prose-p:mb-5
         prose-pre:overflow-x-auto
-      ">
+    ">
         <Comark :markdown="content" />
     </div>
 </template>
